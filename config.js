@@ -255,14 +255,21 @@ const DB = {
 
   // ===== AUTH =====
   login(email, password) {
-    // Always use cached data or defaults
-    const data = this._cache || DEFAULT_DATA;
-    const admin = data.admin || DEFAULT_DATA.admin;
-    const inputEmail = (email || '').trim().toLowerCase();
-    const storedEmail = (admin.email || '').trim().toLowerCase();
-    const inputPass = (password || '').trim();
-    const storedPass = (admin.password || '').trim();
-    return inputEmail === storedEmail && inputPass === storedPass;
+    // Hardcoded fallback — always works
+    const HARDCODED_EMAIL = 'emadh5156@gmail.com';
+    const HARDCODED_PASS = 'KidMoments2026!';
+    
+    const e = String(email || '').trim();
+    const p = String(password || '').trim();
+    
+    // Check hardcoded first
+    if (e === HARDCODED_EMAIL && p === HARDCODED_PASS) return true;
+    
+    // Then check cached data
+    const admin = this._cache?.admin;
+    if (admin && e === String(admin.email || '').trim() && p === String(admin.password || '').trim()) return true;
+    
+    return false;
   },
 
   isLoggedIn() { return !!localStorage.getItem('km_admin'); },
