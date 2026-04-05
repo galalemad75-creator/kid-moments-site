@@ -4,13 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Login — Kid Moments</title>
-<meta name="description" content="Kid Moments admin panel login.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌟</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <link rel="stylesheet" href="style.css">
 <style>
   .auth-page {
@@ -44,9 +42,9 @@
   }
   .auth-card h1 { font-size: 1.6rem; font-weight: 800; margin-bottom: 8px; }
   .auth-card p { color: var(--text-secondary); margin-bottom: 28px; line-height: 1.6; font-size: 0.95rem; }
-  .auth-card .form-group { margin-bottom: 20px; text-align: left; }
-  .auth-card .form-group label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 0.9rem; }
-  .auth-card .form-group input {
+  .form-group { margin-bottom: 20px; text-align: left; }
+  .form-group label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 0.9rem; }
+  .form-group input {
     width: 100%;
     padding: 14px 18px;
     background: var(--bg-primary);
@@ -57,107 +55,145 @@
     font-size: 1rem;
     transition: border-color 0.2s;
   }
-  .auth-card .form-group input:focus {
+  .form-group input:focus {
     outline: none;
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
   }
-  .auth-card .btn { width: 100%; justify-content: center; margin-top: 8px; }
+  .btn-full {
+    width: 100%;
+    padding: 16px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-full);
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .btn-full:hover { background: var(--accent-hover); transform: translateY(-2px); }
+  .btn-full:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
   .auth-links { margin-top: 24px; font-size: 0.9rem; color: var(--text-secondary); }
   .auth-links a { color: var(--accent); font-weight: 700; text-decoration: none; }
   .auth-links a:hover { text-decoration: underline; }
   .error-msg { margin-top: 16px; font-weight: 600; color: #e74c3c; font-size: 0.9rem; }
-  .success-msg { margin-top: 16px; font-weight: 600; color: #27ae60; font-size: 0.9rem; }
+  .debug-box {
+    margin-top: 16px;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-align: left;
+    display: none;
+    font-family: monospace;
+    word-break: break-all;
+  }
 </style>
 </head>
 <body>
 
 <div class="auth-page">
-  <div class="auth-card animate-in">
+  <div class="auth-card">
     <a href="index.html" class="logo">
       <span class="logo-icon">🌟</span>
       <span class="logo-text">Kid <span class="accent">Moments</span></span>
     </a>
 
-    <div id="loginState">
-      <div class="auth-icon">🔐</div>
-      <h1>Admin Login</h1>
-      <p>Sign in to manage chapters and upload songs.</p>
+    <div class="auth-icon">🔐</div>
+    <h1>Admin Login</h1>
+    <p>Sign in to manage chapters and upload songs.</p>
 
-      <form id="loginForm" onsubmit="handleLogin(event)">
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" required placeholder="admin@kidmoments.com" autocomplete="email">
-        </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" required placeholder="Enter your password" autocomplete="current-password">
-        </div>
-        <button type="submit" class="btn btn-primary btn-lg" id="loginBtn">
-          <i data-lucide="log-in"></i>
-          Sign In
-        </button>
-        <p class="error-msg" id="loginError"></p>
-      </form>
-
-      <div class="auth-links">
-        <a href="forgot-password.html">Forgot Password?</a>
-        <span style="margin: 0 12px;">|</span>
-        <a href="index.html">← Back to Home</a>
+    <form id="loginForm" onsubmit="doLogin(event)">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" required value="emadh5156@gmail.com" autocomplete="email">
       </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" required placeholder="Enter password" autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn-full" id="loginBtn">🔓 Sign In</button>
+      <p class="error-msg" id="loginError"></p>
+    </form>
+
+    <div class="debug-box" id="debugBox"></div>
+
+    <div class="auth-links">
+      <a href="index.html">← Back to Home</a>
     </div>
   </div>
 </div>
 
-<script src="config.js"></script>
-<script src="supabase-sync.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  if (typeof lucide !== 'undefined') lucide.createIcons();
-  initTheme();
+// ===== HARDCODED CREDENTIALS — NO EXTERNAL DEPENDENCY =====
+const ADMIN_EMAIL = 'emadh5156@gmail.com';
+const ADMIN_PASS  = 'KidMoments2026!';
 
-  // Auto-redirect if already logged in
-  if (DB.isLoggedIn()) {
-    window.location.href = 'admin.html';
-  }
-});
+// ===== THEME =====
+(function() {
+  var saved = localStorage.getItem('km_theme');
+  var dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+})();
 
-function initTheme() {
-  const saved = localStorage.getItem('km_theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  document.documentElement.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
+// ===== AUTO-REDIRECT IF LOGGED IN =====
+if (localStorage.getItem('km_admin')) {
+  window.location.href = 'admin.html';
 }
 
-async function handleLogin(e) {
+// ===== LOGIN =====
+function doLogin(e) {
   e.preventDefault();
-  const btn = document.getElementById('loginBtn');
-  const error = document.getElementById('loginError');
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
+
+  var btn   = document.getElementById('loginBtn');
+  var error = document.getElementById('loginError');
+  var debug = document.getElementById('debugBox');
+
+  var email = document.getElementById('email').value;
+  var pass  = document.getElementById('password').value;
+
+  // Trim
+  email = (email || '').trim();
+  pass  = (pass || '').trim();
+
+  // Debug info
+  debug.style.display = 'block';
+  debug.innerHTML =
+    '📧 Input email: "' + email + '"<br>' +
+    '📧 Expected:    "' + ADMIN_EMAIL + '"<br>' +
+    '📧 Match: ' + (email === ADMIN_EMAIL) + '<br>' +
+    '🔑 Input pass length: ' + pass.length + '<br>' +
+    '🔑 Expected length:   ' + ADMIN_PASS.length + '<br>' +
+    '🔑 Match: ' + (pass === ADMIN_PASS);
 
   error.textContent = '';
   btn.disabled = true;
-  btn.innerHTML = '<i data-lucide="loader"></i> Signing in...';
-  if (typeof lucide !== 'undefined') lucide.createIcons();
+  btn.textContent = 'Checking...';
 
-  try {
-    // Try to load data (don't fail if it doesn't work)
-    try { await DB.init(); } catch(e) { console.warn('Init warning:', e); }
-
-    const success = DB.login(email, password);
-    if (success) {
-      DB.setSession(email);
-      window.location.href = 'admin.html';
+  setTimeout(function() {
+    if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
+      // SUCCESS
+      localStorage.setItem('km_admin', JSON.stringify({ email: email, ts: Date.now() }));
+      error.textContent = '';
+      error.style.color = '#27ae60';
+      error.textContent = '✅ Login successful! Redirecting...';
+      setTimeout(function() {
+        window.location.href = 'admin.html';
+      }, 500);
     } else {
-      throw new Error('Invalid email or password');
+      // FAIL
+      error.style.color = '#e74c3c';
+      error.textContent = '❌ Invalid email or password';
+      btn.disabled = false;
+      btn.textContent = '🔓 Sign In';
     }
-  } catch (err) {
-    error.textContent = err.message || 'Login failed.';
-    btn.disabled = false;
-    btn.innerHTML = '<i data-lucide="log-in"></i> Sign In';
-    if (typeof lucide !== 'undefined') lucide.createIcons();
-  }
+  }, 300);
 }
 </script>
+
 </body>
 </html>
