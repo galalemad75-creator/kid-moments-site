@@ -141,8 +141,10 @@ async function handleLogin(e) {
   if (typeof lucide !== 'undefined') lucide.createIcons();
 
   try {
+    await DB.init();
     const success = DB.login(email, password);
     if (success) {
+      DB.setSession(email);
       window.location.href = 'admin.html';
     } else {
       throw new Error('Invalid email or password');

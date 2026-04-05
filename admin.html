@@ -340,34 +340,41 @@
   <!-- TAB: Settings -->
   <div class="tab-panel" id="tab-settings">
     <div class="admin-form">
-      <h3>☁️ Cloudinary Configuration</h3>
-      <p style="color:var(--text-secondary); margin-bottom:20px;">Your audio files are uploaded to Cloudinary for fast, reliable streaming.</p>
+      <h3>🔑 GitHub Token (للمزامنة)</h3>
+      <p style="color:var(--text-secondary); margin-bottom:20px;">البيانات محفوظة على الـ GitHub repo مباشرة. أدخل الـ token عشان التغييرات تترفع تلقائي.</p>
       <div class="form-group">
-        <label>Cloud Name</label>
-        <input type="text" value="dse1s0loh" readonly style="opacity:0.7;">
+        <label>GitHub Personal Access Token</label>
+        <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxx">
       </div>
-      <div class="form-group" style="margin-top:16px;">
-        <label>Upload Folder</label>
-        <input type="text" value="kid-moments/audio" readonly style="opacity:0.7;">
-      </div>
-      <div class="form-group" style="margin-top:16px;">
+      <button class="btn btn-success btn-sm" style="margin-top:16px" onclick="saveToken()">
+        <i data-lucide="save"></i> حفظ الـ Token
+      </button>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-top:16px;">
+        <a href="https://github.com/settings/tokens/new" target="_blank" rel="noopener" style="color:var(--accent);">أنشئ token جديد</a>
+        — صلاحيات مطلوبة: <strong>repo</strong> (Full control of private repositories)
+      </p>
+    </div>
+
+    <div class="admin-form">
+      <h3>🔐 تغيير كلمة المرور</h3>
+      <div class="form-group">
         <label>Admin Email</label>
         <input type="email" id="adminEmail" placeholder="emadh5156@gmail.com">
       </div>
       <div class="form-group" style="margin-top:16px;">
-        <label>Admin Password</label>
-        <input type="password" id="adminPassword" placeholder="Enter new password">
+        <label>كلمة المرور الجديدة</label>
+        <input type="password" id="adminPassword" placeholder="أدخل كلمة مرور جديدة">
       </div>
-      <button class="btn btn-success btn-sm" style="margin-top:16px" onclick="saveSettings()">
-        <i data-lucide="save"></i> Save Changes
+      <button class="btn btn-success btn-sm" style="margin-top:16px" onclick="savePassword()">
+        <i data-lucide="save"></i> حفظ
       </button>
     </div>
 
     <div class="admin-form">
-      <h3>🗑️ Reset Data</h3>
-      <p style="color:var(--text-secondary); margin-bottom:16px;">Reset all chapters and songs to defaults. This cannot be undone!</p>
+      <h3>🗑️ إعادة تعيين البيانات</h3>
+      <p style="color:var(--text-secondary); margin-bottom:16px;">حذف كل الفصول والأغاني والرجوع للإعدادات الافتراضية.</p>
       <button class="btn-sm btn-danger" onclick="resetData()">
-        <i data-lucide="alert-triangle"></i> Reset All Data
+        <i data-lucide="alert-triangle"></i> إعادة تعيين
       </button>
     </div>
   </div>
@@ -612,23 +619,29 @@ function playPreview(url) {
 }
 
 // ===== SETTINGS =====
-function saveSettings() {
-  const email = document.getElementById('adminEmail').value.trim();
-  const password = document.getElementById('adminPassword').value.trim();
-  const data = DB.getData();
-
-  if (email) data.adminEmail = email;
-  if (password) data.adminPassword = password;
-  DB.saveData(data);
-  showToast('Settings saved!', 'success');
+function saveToken() {
+  const token = document.getElementById('ghToken').value.trim();
+  if (!token) { showToast('أدخل الـ token!', 'error'); return; }
+  GH.setToken(token);
+  showToast('✅ Token saved! التغييرات هترفع على GitHub', 'success');
 }
 
-function resetData() {
-  if (!confirm('⚠️ This will delete ALL chapters and songs. Are you sure?')) return;
-  if (!confirm('Last chance! This cannot be undone!')) return;
-  localStorage.removeItem(DB.KEY);
-  localStorage.removeItem('km_chapters');
-  showToast('Data reset! Reloading...', 'info');
+async function savePassword() {
+  const email = document.getElementById('adminEmail').value.trim();
+  const password = document.getElementById('adminPassword').value.trim();
+  if (!email && !password) { showToast('أدخل بيانات!', 'error'); return; }
+  if (email) DB._cache.admin.email = email;
+  if (password) DB._cache.admin.password = password;
+  await DB.save();
+  showToast('✅ Password updated!', 'success');
+}
+
+async function resetData() {
+  if (!confirm('⚠️ هتحذف كل البيانات! متأكد؟')) return;
+  if (!confirm('آخر فرصة!')) return;
+  DB._cache = JSON.parse(JSON.stringify(DEFAULT_DATA));
+  await DB.save();
+  showToast('✅ Reset done! Reloading...', 'info');
   setTimeout(() => location.reload(), 1500);
 }
 

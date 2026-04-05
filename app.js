@@ -200,18 +200,8 @@ function animateCounter(el) {
 
 // ===== CHAPTERS LOADING =====
 async function initChapters() {
-  try {
-    const r = await fetch('/api/chapters');
-    const d = await r.json();
-    chapters = d.chapters || d;
-  } catch (e) {
-    const s = localStorage.getItem('km_chapters');
-    if (s) {
-      chapters = JSON.parse(s);
-    } else {
-      chapters = CHAPTERS.map(c => ({ ...c, songs: [] }));
-    }
-  }
+  await DB.init();
+  chapters = DB.getChapters();
   renderChapters();
 }
 
