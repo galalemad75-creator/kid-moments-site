@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Kid Moments</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌟</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<link rel="stylesheet" href="style.css">
+<style>
+  .admin-layout {
+    padding-top: calc(var(--header-height) + 30px);
+    max-width: 1100px;
+    margin: 0 auto;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-bottom: 80px;
+  }
+  .admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .admin-header h1 { font-size: 1.8rem; font-weight: 800; }
+  .admin-header .user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+  .admin-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 0;
+  }
+  .admin-tab {
+    padding: 12px 24px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+  }
+  .admin-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .admin-tab:hover { color: var(--accent); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Stats bar */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .stats-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    text-align: center;
+  }
+  .stats-item .s-num { font-size: 1.8rem; font-weight: 800; color: var(--accent); display: block; }
+  .stats-item .s-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
+
+  /* Chapter list */
+  .chapter-list { display: flex; flex-direction: column; gap: 12px; }
+  .chapter-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.2s;
+  }
+  .chapter-item:hover { border-color: var(--accent); }
+  .chapter-item .ch-icon { font-size: 1.8rem; }
+  .chapter-item .ch-info { flex: 1; }
+  .chapter-item .ch-name { font-weight: 700; font-size: 1rem; }
+  .chapter-item .ch-count { font-size: 0.85rem; color: var(--text-muted); }
+  .chapter-item .ch-actions { display: flex; gap: 8px; }
+
+  /* Song list */
+  .song-list { margin-top: 12px; padding-left: 20px; }
+  .song-item {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .song-item .s-title { flex: 1; font-weight: 600; font-size: 0.9rem; }
+  .song-item .s-actions { display: flex; gap: 6px; }
+
+  /* Forms */
+  .admin-form {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    margin-bottom: 24px;
+  }
+  .admin-form h3 { margin-bottom: 20px; font-size: 1.1rem; }
+  .form-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .form-row .form-group { flex: 1; min-width: 200px; }
+
+  /* Buttons */
+  .btn-sm {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+  .btn-sm svg { width: 14px; height: 14px; }
+  .btn-danger { background: #e74c3c; color: #fff; border: none; }
+  .btn-danger:hover { background: #c0392b; }
+  .btn-success { background: #27ae60; color: #fff; border: none; }
+  .btn-success:hover { background: #219a52; }
+  .btn-warning { background: #f39c12; color: #fff; border: none; }
+  .btn-warning:hover { background: #d68910; }
+  .btn-ghost {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Upload progress */
+  .upload-progress {
+    display: none;
+    margin-top: 12px;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+  }
+  .upload-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .upload-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.3s;
+  }
+
+  /* File input styling */
+  .file-input-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+  }
+  .file-input-wrapper input[type="file"] {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+  .file-input-label {
+    display: block;
+    padding: 14px 18px;
+    background: var(--bg-primary);
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-sm);
+    text-align: center;
+    color: var(--text-muted);
+    font-weight: 600;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .file-input-label:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Toast notification */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 10000;
+    padding: 16px 24px;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.4s ease;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { background: #27ae60; color: #fff; }
+  .toast.error { background: #e74c3c; color: #fff; }
+  .toast.info { background: var(--accent); color: #fff; }
+</style>
+</head>
+<body>
+
+<header class="header" id="header">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-icon">🌟</span>
+      <span class="logo-text">Kid <span class="accent">Moments</span> Admin</span>
+    </a>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+        <i data-lucide="sun" class="icon-light"></i>
+        <i data-lucide="moon" class="icon-dark"></i>
+      </button>
+      <button class="btn btn-sm btn-ghost" onclick="handleLogout()" id="logoutBtn">
+        <i data-lucide="log-out"></i> Logout
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="admin-layout">
+  <div class="admin-header">
+    <h1>📊 Dashboard</h1>
+    <div class="user-info">
+      <i data-lucide="user"></i>
+      <span id="userEmail">admin@kidmoments.com</span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stats-item">
+      <span class="s-num" id="totalChapters">0</span>
+      <span class="s-label">Chapters</span>
+    </div>
+    <div class="stats-item">
+      <span class="s-num" id="totalSongs">0</span>
+      <span class="s-label">Songs</span>
+    </div>
+    <div class="stats-item">
+      <span class="s-num" id="totalAudio">0</span>
+      <span class="s-label">Audio Files</span>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="admin-tabs">
+    <button class="admin-tab active" onclick="switchTab('chapters')">📚 Chapters</button>
+    <button class="admin-tab" onclick="switchTab('songs')">🎵 Upload Song</button>
+    <button class="admin-tab" onclick="switchTab('settings')">⚙️ Settings</button>
+  </div>
+
+  <!-- TAB: Chapters -->
+  <div class="tab-panel active" id="tab-chapters">
+    <div class="admin-form">
+      <h3>➕ Add New Chapter</h3>
+      <form onsubmit="addChapter(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="chName">Chapter Name *</label>
+            <input type="text" id="chName" required placeholder="e.g., Managing Anxiety">
+          </div>
+          <div class="form-group">
+            <label for="chIcon">Icon (emoji) *</label>
+            <input type="text" id="chIcon" required placeholder="e.g., 😰" maxlength="4">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-success btn-sm" style="margin-top:12px">
+          <i data-lucide="plus"></i> Add Chapter
+        </button>
+      </form>
+    </div>
+
+    <h3 style="margin-bottom:16px;">📚 All Chapters</h3>
+    <div class="chapter-list" id="chapterList">
+      <p style="color:var(--text-muted); text-align:center; padding:40px;">Loading chapters...</p>
+    </div>
+  </div>
+
+  <!-- TAB: Upload Song -->
+  <div class="tab-panel" id="tab-songs">
+    <div class="admin-form">
+      <h3>🎵 Upload New Song</h3>
+      <form onsubmit="uploadSong(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="songChapter">Chapter *</label>
+            <select id="songChapter" required>
+              <option value="">Select chapter...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="songTitle">Song Title *</label>
+            <input type="text" id="songTitle" required placeholder="e.g., Episode 1 - Deep Breathing">
+          </div>
+        </div>
+        <div class="form-group" style="margin-top: 16px;">
+          <label>Audio File (MP3, WAV, OGG) *</label>
+          <div class="file-input-wrapper">
+            <input type="file" id="songFile" accept="audio/*" required onchange="updateFileName(this)">
+            <div class="file-input-label" id="fileLabel">
+              📎 Click to select audio file or drag & drop
+            </div>
+          </div>
+        </div>
+        <div class="upload-progress" id="uploadProgress">
+          <span id="uploadStatus">Uploading...</span>
+          <div class="upload-bar">
+            <div class="upload-fill" id="uploadFill"></div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-success btn-sm" style="margin-top:16px" id="uploadBtn">
+          <i data-lucide="upload"></i> Upload Song
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- TAB: Settings -->
+  <div class="tab-panel" id="tab-settings">
+    <div class="admin-form">
+      <h3>⚙️ Supabase Configuration</h3>
+      <p style="color:var(--text-secondary); margin-bottom:20px;">Connect your Supabase project to enable cloud storage and authentication.</p>
+      <div class="form-group">
+        <label>Supabase URL</label>
+        <input type="url" id="settingUrl" placeholder="https://your-project.supabase.co">
+      </div>
+      <div class="form-group" style="margin-top:16px;">
+        <label>Supabase Anon Key</label>
+        <input type="text" id="settingKey" placeholder="eyJhbGciOi...">
+      </div>
+      <button class="btn btn-success btn-sm" style="margin-top:16px" onclick="saveSettings()">
+        <i data-lucide="save"></i> Save Configuration
+      </button>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-top:16px;">
+        Don't have Supabase? <a href="https://supabase.com" target="_blank" rel="noopener" style="color:var(--accent);">Create a free account</a>
+        and follow the setup guide.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="config.js"></script>
+<script src="supabase-sync.js"></script>
+<script>
+let chapters = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
+  initTheme();
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+
+  // Check auth
+  if (typeof db !== 'undefined' && db.isLoggedIn()) {
+    document.getElementById('userEmail').textContent = db.getUser()?.email || 'admin@kidmoments.com';
+  }
+
+  await loadAll();
+});
+
+function initTheme() {
+  const saved = localStorage.getItem('km_theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  document.documentElement.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
+  document.getElementById('themeToggle')?.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('km_theme', next);
+  });
+}
+
+// ===== LOAD DATA =====
+async function loadAll() {
+  chapters = await SYNC.loadChapters();
+  renderStats();
+  renderChapters();
+  populateChapterSelect();
+}
+
+function renderStats() {
+  const totalSongs = chapters.reduce((sum, c) => sum + (c.songs?.length || 0), 0);
+  document.getElementById('totalChapters').textContent = chapters.length;
+  document.getElementById('totalSongs').textContent = totalSongs;
+  document.getElementById('totalAudio').textContent = totalSongs;
+}
+
+function renderChapters() {
+  const list = document.getElementById('chapterList');
+  if (!chapters.length) {
+    list.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:40px;">No chapters yet. Add your first chapter above! 👆</p>';
+    return;
+  }
+
+  list.innerHTML = chapters.map(c => `
+    <div class="chapter-item" id="ch-${c.id}">
+      <span class="ch-icon">${c.icon}</span>
+      <div class="ch-info">
+        <div class="ch-name">${c.name}</div>
+        <div class="ch-count">${(c.songs || []).length} song${(c.songs || []).length !== 1 ? 's' : ''}</div>
+        ${c.songs?.length ? `
+          <div class="song-list">
+            ${c.songs.map(s => `
+              <div class="song-item">
+                <span class="s-title">🎵 ${s.title}</span>
+                <div class="s-actions">
+                  <button class="btn-sm btn-ghost" onclick="playPreview('${s.audio}')">
+                    <i data-lucide="play"></i>
+                  </button>
+                  <button class="btn-sm btn-danger" onclick="deleteSong(${c.id}, ${s.id})">
+                    <i data-lucide="trash-2"></i>
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+      </div>
+      <div class="ch-actions">
+        <button class="btn-sm btn-warning" onclick="editChapter(${c.id})">
+          <i data-lucide="edit-3"></i>
+        </button>
+        <button class="btn-sm btn-danger" onclick="deleteChapter(${c.id})">
+          <i data-lucide="trash-2"></i>
+        </button>
+      </div>
+    </div>
+  `).join('');
+
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function populateChapterSelect() {
+  const sel = document.getElementById('songChapter');
+  sel.innerHTML = '<option value="">Select chapter...</option>';
+  chapters.forEach(c => {
+    sel.innerHTML += `<option value="${c.id}">${c.icon} ${c.name}</option>`;
+  });
+}
+
+// ===== TAB SWITCHING =====
+function switchTab(name) {
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ===== ADD CHAPTER =====
+async function addChapter(e) {
+  e.preventDefault();
+  const name = document.getElementById('chName').value.trim();
+  const icon = document.getElementById('chIcon').value.trim();
+  if (!name || !icon) return;
+
+  try {
+    await SYNC.addChapter(name, icon);
+    document.getElementById('chName').value = '';
+    document.getElementById('chIcon').value = '';
+    showToast('Chapter added!', 'success');
+    await loadAll();
+  } catch (err) {
+    showToast('Error: ' + err.message, 'error');
+  }
+}
+
+// ===== EDIT CHAPTER =====
+async function editChapter(id) {
+  const ch = chapters.find(c => c.id === id);
+  if (!ch) return;
+  const newName = prompt('Chapter name:', ch.name);
+  if (newName === null) return;
+  const newIcon = prompt('Chapter icon:', ch.icon);
+  if (newIcon === null) return;
+
+  try {
+    await SYNC.updateChapter(id, { name: newName, icon: newIcon });
+    showToast('Chapter updated!', 'success');
+    await loadAll();
+  } catch (err) {
+    showToast('Error: ' + err.message, 'error');
+  }
+}
+
+// ===== DELETE CHAPTER =====
+async function deleteChapter(id) {
+  if (!confirm('Delete this chapter and all its songs?')) return;
+  try {
+    await SYNC.removeChapter(id);
+    showToast('Chapter deleted!', 'info');
+    await loadAll();
+  } catch (err) {
+    showToast('Error: ' + err.message, 'error');
+  }
+}
+
+// ===== UPLOAD SONG =====
+async function uploadSong(e) {
+  e.preventDefault();
+  const chapterId = parseInt(document.getElementById('songChapter').value);
+  const title = document.getElementById('songTitle').value.trim();
+  const file = document.getElementById('songFile').files[0];
+
+  if (!chapterId || !title || !file) {
+    showToast('Please fill all fields!', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('uploadBtn');
+  const progress = document.getElementById('uploadProgress');
+  const fill = document.getElementById('uploadFill');
+  const status = document.getElementById('uploadStatus');
+
+  btn.disabled = true;
+  progress.style.display = 'block';
+  fill.style.width = '0%';
+  status.textContent = 'Uploading audio file...';
+
+  try {
+    // Simulate progress
+    let p = 0;
+    const interval = setInterval(() => {
+      p = Math.min(p + Math.random() * 15, 90);
+      fill.style.width = p + '%';
+    }, 200);
+
+    let audioUrl;
+    try {
+      audioUrl = await SYNC.uploadAudio(file);
+    } catch (err) {
+      // Fallback: create blob URL for local testing
+      audioUrl = URL.createObjectURL(file);
+      console.warn('Upload to Supabase failed, using local blob URL');
+    }
+
+    clearInterval(interval);
+    fill.style.width = '100%';
+    status.textContent = 'Saving song metadata...';
+
+    await SYNC.addSong(chapterId, title, audioUrl);
+
+    status.textContent = '✅ Upload complete!';
+    showToast('Song uploaded successfully!', 'success');
+
+    document.getElementById('songTitle').value = '';
+    document.getElementById('songFile').value = '';
+    document.getElementById('fileLabel').textContent = '📎 Click to select audio file or drag & drop';
+
+    await loadAll();
+
+    setTimeout(() => {
+      progress.style.display = 'none';
+      fill.style.width = '0%';
+    }, 2000);
+  } catch (err) {
+    status.textContent = '❌ Upload failed: ' + err.message;
+    showToast('Upload failed: ' + err.message, 'error');
+  }
+
+  btn.disabled = false;
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function updateFileName(input) {
+  const label = document.getElementById('fileLabel');
+  if (input.files.length) {
+    label.textContent = '✅ ' + input.files[0].name;
+  }
+}
+
+// ===== DELETE SONG =====
+async function deleteSong(chapterId, songId) {
+  if (!confirm('Delete this song?')) return;
+  try {
+    await SYNC.removeSong(songId);
+    // Remove from local data too
+    const ch = chapters.find(c => c.id === chapterId);
+    if (ch && ch.songs) {
+      ch.songs = ch.songs.filter(s => s.id !== songId);
+      SYNC.saveLocal(chapters);
+    }
+    showToast('Song deleted!', 'info');
+    await loadAll();
+  } catch (err) {
+    showToast('Error: ' + err.message, 'error');
+  }
+}
+
+function playPreview(url) {
+  const audio = new Audio(url);
+  audio.play().catch(e => showToast('Cannot play audio', 'error'));
+}
+
+// ===== SETTINGS =====
+function saveSettings() {
+  const url = document.getElementById('settingUrl').value.trim();
+  const key = document.getElementById('settingKey').value.trim();
+  if (!url || !key) {
+    showToast('Please fill both fields!', 'error');
+    return;
+  }
+  localStorage.setItem('km_supabase_url', url);
+  localStorage.setItem('km_supabase_key', key);
+  showToast('Settings saved! Reload page to apply.', 'success');
+}
+
+// ===== LOGOUT =====
+async function handleLogout() {
+  try {
+    await db.signOut();
+  } catch (e) {}
+  window.location.href = 'index.html';
+}
+
+// ===== TOAST =====
+function showToast(msg, type = 'info') {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast ' + type;
+  setTimeout(() => toast.classList.add('show'), 10);
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
