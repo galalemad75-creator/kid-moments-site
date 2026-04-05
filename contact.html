@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us — Kid Moments</title>
+<meta name="description" content="Get in touch with the Kid Moments team. We'd love to hear your feedback, suggestions, or collaboration ideas. Email: emadh5156@gmail.com">
+<meta name="robots" content="index, follow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌟</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="header" id="header">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-icon">🌟</span>
+      <span class="logo-text">Kid <span class="accent">Moments</span></span>
+    </a>
+    <nav class="nav" id="navMenu">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="index.html#chapters" class="nav-link">Episodes</a>
+      <a href="about.html" class="nav-link">About</a>
+      <a href="contact.html" class="nav-link active">Contact</a>
+      <a href="privacy.html" class="nav-link">Privacy</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+        <i data-lucide="sun" class="icon-light"></i>
+        <i data-lucide="moon" class="icon-dark"></i>
+      </button>
+      <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="container">
+    <h1>Get in <span class="gradient-text">Touch</span></h1>
+    <p>Have a question, suggestion, or just want to say hi? We'd love to hear from you!</p>
+  </div>
+</section>
+
+<div class="page-content animate-on-scroll">
+  <a href="index.html" class="back-btn-inline">← Back to Home</a>
+
+  <h2>📬 Contact Us</h2>
+  <p>Whether you're a parent with feedback, an educator with a topic suggestion, or a potential collaborator — we're all ears! Fill out the form below and we'll get back to you as soon as possible.</p>
+
+  <form class="contact-form" id="contactForm" onsubmit="handleSubmit(event)">
+    <div class="form-group">
+      <label for="name">Your Name *</label>
+      <input type="text" id="name" name="name" required placeholder="Enter your name" autocomplete="name">
+    </div>
+    <div class="form-group">
+      <label for="email">Email Address *</label>
+      <input type="email" id="email" name="email" required placeholder="you@example.com" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label for="subject">Subject *</label>
+      <select id="subject" name="subject" required>
+        <option value="">Select a topic...</option>
+        <option value="feedback">General Feedback</option>
+        <option value="topic">Topic Suggestion</option>
+        <option value="collaboration">Collaboration</option>
+        <option value="refund">Refund Request</option>
+        <option value="bug">Report a Problem</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="message">Message *</label>
+      <textarea id="message" name="message" required placeholder="Tell us what's on your mind..."></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+      <i data-lucide="send"></i>
+      Send Message
+    </button>
+    <p id="formStatus" style="margin-top:16px; font-weight:600;"></p>
+  </form>
+
+  <h2>📍 Other Ways to Reach Us</h2>
+  <ul>
+    <li>📧 Email: <a href="mailto:emadh5156@gmail.com"><strong>emadh5156@gmail.com</strong></a></li>
+    <li>🐦 Twitter: <strong>@KidMomentsPod</strong></li>
+    <li>📸 Instagram: <strong>@kidmoments</strong></li>
+  </ul>
+
+  <div class="highlight">
+    <strong>⏰ Response Time:</strong> We typically respond within 24–48 hours. For urgent matters, please include "URGENT" in your subject line.
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <span class="logo-icon">🌟</span>
+          <span class="logo-text">Kid <span class="accent">Moments</span></span>
+        </a>
+        <p>Teaching kids essential life skills through fun stories and catchy songs.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <a href="index.html">Home</a>
+        <a href="index.html#chapters">Episodes</a>
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div class="footer-links">
+        <h4>Legal</h4>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+        <a href="refund.html">Refund Policy</a>
+        <a href="privacy.html#cookies">Cookie Policy</a>
+      </div>
+      <div class="footer-links">
+        <h4>App Policies</h4>
+        <a href="google-play-terms.html">Google Play Terms</a>
+        <a href="app-store-terms.html">App Store Terms</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Kid Moments. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+<script>
+function handleSubmit(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  const status = document.getElementById('formStatus');
+  btn.disabled = true;
+  btn.innerHTML = '<i data-lucide="loader"></i> Sending...';
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+
+  // Simulate send (replace with real endpoint)
+  setTimeout(() => {
+    status.style.color = '#27ae60';
+    status.textContent = '✅ Message sent successfully! We\'ll get back to you soon.';
+    btn.innerHTML = '<i data-lucide="check"></i> Sent!';
+    document.getElementById('contactForm').reset();
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.innerHTML = '<i data-lucide="send"></i> Send Message';
+      status.textContent = '';
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }, 3000);
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  }, 1500);
+}
+</script>
+</body>
+</html>
