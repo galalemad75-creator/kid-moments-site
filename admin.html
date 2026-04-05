@@ -340,23 +340,35 @@
   <!-- TAB: Settings -->
   <div class="tab-panel" id="tab-settings">
     <div class="admin-form">
-      <h3>⚙️ Supabase Configuration</h3>
-      <p style="color:var(--text-secondary); margin-bottom:20px;">Connect your Supabase project to enable cloud storage and authentication.</p>
+      <h3>☁️ Cloudinary Configuration</h3>
+      <p style="color:var(--text-secondary); margin-bottom:20px;">Your audio files are uploaded to Cloudinary for fast, reliable streaming.</p>
       <div class="form-group">
-        <label>Supabase URL</label>
-        <input type="url" id="settingUrl" placeholder="https://your-project.supabase.co">
+        <label>Cloud Name</label>
+        <input type="text" value="dse1s0loh" readonly style="opacity:0.7;">
       </div>
       <div class="form-group" style="margin-top:16px;">
-        <label>Supabase Anon Key</label>
-        <input type="text" id="settingKey" placeholder="eyJhbGciOi...">
+        <label>Upload Folder</label>
+        <input type="text" value="kid-moments/audio" readonly style="opacity:0.7;">
+      </div>
+      <div class="form-group" style="margin-top:16px;">
+        <label>Admin Email</label>
+        <input type="email" id="adminEmail" placeholder="emadh5156@gmail.com">
+      </div>
+      <div class="form-group" style="margin-top:16px;">
+        <label>Admin Password</label>
+        <input type="password" id="adminPassword" placeholder="Enter new password">
       </div>
       <button class="btn btn-success btn-sm" style="margin-top:16px" onclick="saveSettings()">
-        <i data-lucide="save"></i> Save Configuration
+        <i data-lucide="save"></i> Save Changes
       </button>
-      <p style="color:var(--text-muted); font-size:0.85rem; margin-top:16px;">
-        Don't have Supabase? <a href="https://supabase.com" target="_blank" rel="noopener" style="color:var(--accent);">Create a free account</a>
-        and follow the setup guide.
-      </p>
+    </div>
+
+    <div class="admin-form">
+      <h3>🗑️ Reset Data</h3>
+      <p style="color:var(--text-secondary); margin-bottom:16px;">Reset all chapters and songs to defaults. This cannot be undone!</p>
+      <button class="btn-sm btn-danger" onclick="resetData()">
+        <i data-lucide="alert-triangle"></i> Reset All Data
+      </button>
     </div>
   </div>
 </div>
@@ -374,8 +386,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (typeof lucide !== 'undefined') lucide.createIcons();
 
   // Check auth
-  if (typeof db !== 'undefined' && db.isLoggedIn()) {
-    document.getElementById('userEmail').textContent = db.getUser()?.email || 'admin@kidmoments.com';
+  if (DB.isLoggedIn()) {
+    const user = DB.getUser();
+    document.getElementById('userEmail').textContent = user?.email || 'admin@kidmoments.com';
   }
 
   await loadAll();
@@ -540,27 +553,17 @@ async function uploadSong(e) {
   status.textContent = 'Uploading audio file...';
 
   try {
-    // Simulate progress
-    let p = 0;
-    const interval = setInterval(() => {
-      p = Math.min(p + Math.random() * 15, 90);
-      fill.style.width = p + '%';
-    }, 200);
-
-    let audioUrl;
-    try {
-      audioUrl = await SYNC.uploadAudio(file);
-    } catch (err) {
-      // Fallback: create blob URL for local testing
-      audioUrl = URL.createObjectURL(file);
-      console.warn('Upload to Supabase failed, using local blob URL');
-    }
+    // Upload to Cloudinary
+    const result = await SYNC.uploadAudio(file, (pct) => {
+      fill.style.width = pct + '%';
+      status.textContent = `Uploading... ${pct}%`;
+    });
 
     clearInterval(interval);
     fill.style.width = '100%';
     status.textContent = 'Saving song metadata...';
 
-    await SYNC.addSong(chapterId, title, audioUrl);
+    await SYNC.addSong(chapterId, title, result.url, result.publicId);
 
     status.textContent = '✅ Upload complete!';
     showToast('Song uploaded successfully!', 'success');
@@ -595,13 +598,7 @@ function updateFileName(input) {
 async function deleteSong(chapterId, songId) {
   if (!confirm('Delete this song?')) return;
   try {
-    await SYNC.removeSong(songId);
-    // Remove from local data too
-    const ch = chapters.find(c => c.id === chapterId);
-    if (ch && ch.songs) {
-      ch.songs = ch.songs.filter(s => s.id !== songId);
-      SYNC.saveLocal(chapters);
-    }
+    await SYNC.removeSong(chapterId, songId);
     showToast('Song deleted!', 'info');
     await loadAll();
   } catch (err) {
@@ -616,22 +613,28 @@ function playPreview(url) {
 
 // ===== SETTINGS =====
 function saveSettings() {
-  const url = document.getElementById('settingUrl').value.trim();
-  const key = document.getElementById('settingKey').value.trim();
-  if (!url || !key) {
-    showToast('Please fill both fields!', 'error');
-    return;
-  }
-  localStorage.setItem('km_supabase_url', url);
-  localStorage.setItem('km_supabase_key', key);
-  showToast('Settings saved! Reload page to apply.', 'success');
+  const email = document.getElementById('adminEmail').value.trim();
+  const password = document.getElementById('adminPassword').value.trim();
+  const data = DB.getData();
+
+  if (email) data.adminEmail = email;
+  if (password) data.adminPassword = password;
+  DB.saveData(data);
+  showToast('Settings saved!', 'success');
+}
+
+function resetData() {
+  if (!confirm('⚠️ This will delete ALL chapters and songs. Are you sure?')) return;
+  if (!confirm('Last chance! This cannot be undone!')) return;
+  localStorage.removeItem(DB.KEY);
+  localStorage.removeItem('km_chapters');
+  showToast('Data reset! Reloading...', 'info');
+  setTimeout(() => location.reload(), 1500);
 }
 
 // ===== LOGOUT =====
 async function handleLogout() {
-  try {
-    await db.signOut();
-  } catch (e) {}
+  DB.logout();
   window.location.href = 'index.html';
 }
 

@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initTheme();
 
   // Auto-redirect if already logged in
-  if (typeof db !== 'undefined' && db.isLoggedIn()) {
+  if (DB.isLoggedIn()) {
     window.location.href = 'admin.html';
   }
 });
@@ -141,8 +141,12 @@ async function handleLogin(e) {
   if (typeof lucide !== 'undefined') lucide.createIcons();
 
   try {
-    await db.signIn(email, password);
-    window.location.href = 'admin.html';
+    const success = DB.login(email, password);
+    if (success) {
+      window.location.href = 'admin.html';
+    } else {
+      throw new Error('Invalid email or password');
+    }
   } catch (err) {
     error.textContent = err.message || 'Login failed. Check your credentials.';
     btn.disabled = false;

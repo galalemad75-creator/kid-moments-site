@@ -1,204 +1,208 @@
 // ============================================
-// SUPABASE CONFIGURATION
-// ============================================
-// ⚠️ Replace these with your actual Supabase credentials
-// Get them from: https://supabase.com → Your Project → Settings → API
-
-const SUPABASE_URL = 'YOUR_SUPABASE_URL';       // e.g. https://xxxx.supabase.co
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // e.g. eyJhbGciOi...
-
-// ============================================
-// DO NOT EDIT BELOW THIS LINE
+// CLOUDINARY CONFIGURATION
 // ============================================
 
-class KidMomentsDB {
-  constructor() {
-    this.url = SUPABASE_URL;
-    this.key = SUPABASE_ANON_KEY;
-    this.token = null;
-    this.user = null;
-    this._init();
-  }
+const CLOUDINARY_CLOUD_NAME = 'dse1s0loh';
+const CLOUDINARY_API_KEY = '611184425616475';
+const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`;
 
-  _headers() {
-    const h = {
-      'Content-Type': 'application/json',
-      'apikey': this.key,
-      'Authorization': `Bearer ${this.token || this.key}`
+// ============================================
+// DATABASE — Local Storage (no Supabase needed)
+// ============================================
+
+const DB = {
+  KEY: 'km_data',
+
+  getData() {
+    const raw = localStorage.getItem(this.KEY);
+    if (raw) return JSON.parse(raw);
+    // Default data
+    const defaults = {
+      chapters: [
+        { id: 1, name: 'Voice (Speaking Up)', icon: '🗣️', songs: [] },
+        { id: 2, name: 'Saying No to Strangers', icon: '🚫', songs: [] },
+        { id: 3, name: 'Using Indoor Voices', icon: '🤫', songs: [] },
+        { id: 4, name: 'My Dry Bed', icon: '🛏️', songs: [] },
+        { id: 5, name: 'Thumb Sucking', icon: '👍', songs: [] },
+        { id: 6, name: 'Managing Whining', icon: '😤', songs: [] },
+        { id: 7, name: 'Sharing with Others', icon: '🤝', songs: [] },
+        { id: 8, name: 'Listening to Adults', icon: '👂', songs: [] },
+        { id: 9, name: 'Following Rules', icon: '📋', songs: [] },
+        { id: 10, name: 'Handling Anger', icon: '😠', songs: [] },
+        { id: 11, name: 'Asking for Help', icon: '🙋', songs: [] },
+        { id: 12, name: 'Waiting My Turn', icon: '⏳', songs: [] },
+        { id: 13, name: 'Playing Nicely', icon: '🎮', songs: [] },
+        { id: 14, name: 'Saying Please and Thank You', icon: '🙏', songs: [] },
+        { id: 15, name: 'Using Kind Words', icon: '💬', songs: [] },
+        { id: 16, name: 'Keeping Hands to Myself', icon: '✋', songs: [] },
+        { id: 17, name: 'Tidying Up', icon: '🧹', songs: [] },
+        { id: 18, name: 'Brushing My Teeth', icon: '🦷', songs: [] },
+        { id: 19, name: 'Getting Dressed', icon: '👕', songs: [] },
+        { id: 20, name: 'Eating Healthy', icon: '🥗', songs: [] },
+        { id: 21, name: 'Going to Bed on Time', icon: '🌙', songs: [] },
+        { id: 22, name: 'Washing My Hands', icon: '🧼', songs: [] },
+        { id: 23, name: 'Sitting Still', icon: '🧘', songs: [] },
+        { id: 24, name: 'Walking Safely', icon: '🚶', songs: [] },
+        { id: 25, name: 'Being Honest', icon: '💎', songs: [] },
+        { id: 26, name: 'Saying Sorry', icon: '😔', songs: [] },
+        { id: 27, name: 'Trying New Foods', icon: '🍽️', songs: [] },
+        { id: 28, name: 'Managing Frustration', icon: '💪', songs: [] },
+        { id: 29, name: 'Bedtime Routine', icon: '🌜', songs: [] },
+        { id: 30, name: 'Morning Routine', icon: '☀️', songs: [] },
+        { id: 31, name: 'Tying Shoes', icon: '👟', songs: [] },
+        { id: 32, name: 'Table Manners', icon: '🍴', songs: [] },
+        { id: 33, name: 'Voice (Speaking Up) 2', icon: '🗣️', songs: [] },
+        { id: 34, name: 'Saying No to Strangers 2', icon: '🚫', songs: [] },
+        { id: 35, name: 'Using Indoor Voices 2', icon: '🤫', songs: [] },
+        { id: 36, name: 'Handling Anger 2', icon: '😠', songs: [] },
+        { id: 37, name: 'Managing Frustration 2', icon: '💪', songs: [] },
+        { id: 38, name: 'Managing Whining 2', icon: '😤', songs: [] },
+        { id: 39, name: 'Brushing Teeth 2', icon: '🦷', songs: [] },
+        { id: 40, name: 'Getting Dressed 2', icon: '👕', songs: [] },
+        { id: 41, name: 'Washing Hands 2', icon: '🧼', songs: [] }
+      ],
+      nextChapterId: 42,
+      nextSongId: 1,
+      adminEmail: 'emadh5156@gmail.com',
+      adminPassword: 'KidMoments2026!'
     };
-    return h;
-  }
+    this.saveData(defaults);
+    return defaults;
+  },
 
-  _init() {
-    const saved = localStorage.getItem('km_session');
-    if (saved) {
-      try {
-        const session = JSON.parse(saved);
-        this.token = session.access_token;
-        this.user = session.user;
-      } catch (e) {
-        localStorage.removeItem('km_session');
-      }
-    }
-  }
-
-  // ===== AUTH =====
-  async signUp(email, password) {
-    const res = await fetch(`${this.url}/auth/v1/signup`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': this.key },
-      body: JSON.stringify({ email, password })
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.msg || data.error_description || 'Sign up failed');
-    return data;
-  }
-
-  async signIn(email, password) {
-    const res = await fetch(`${this.url}/auth/v1/token?grant_type=password`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': this.key },
-      body: JSON.stringify({ email, password })
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.msg || data.error_description || 'Sign in failed');
-    this.token = data.access_token;
-    this.user = data.user;
-    localStorage.setItem('km_session', JSON.stringify(data));
-    return data;
-  }
-
-  async signOut() {
-    try {
-      await fetch(`${this.url}/auth/v1/logout`, {
-        method: 'POST',
-        headers: this._headers()
-      });
-    } catch (e) {}
-    this.token = null;
-    this.user = null;
-    localStorage.removeItem('km_session');
-  }
-
-  async resetPassword(email) {
-    const res = await fetch(`${this.url}/auth/v1/recover`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': this.key },
-      body: JSON.stringify({ email })
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.msg || 'Password reset failed');
-    return data;
-  }
-
-  isLoggedIn() {
-    return !!(this.token && this.user);
-  }
-
-  getUser() {
-    return this.user;
-  }
+  saveData(data) {
+    localStorage.setItem(this.KEY, JSON.stringify(data));
+  },
 
   // ===== CHAPTERS =====
-  async getChapters() {
-    const res = await fetch(`${this.url}/rest/v1/chapters?select=*,songs(*)&order=id.asc`, {
-      headers: this._headers()
-    });
-    if (!res.ok) throw new Error('Failed to fetch chapters');
-    return await res.json();
-  }
+  getChapters() {
+    return this.getData().chapters;
+  },
 
-  async createChapter(data) {
-    const res = await fetch(`${this.url}/rest/v1/chapters`, {
-      method: 'POST',
-      headers: { ...this._headers(), 'Prefer': 'return=representation' },
-      body: JSON.stringify(data)
-    });
-    if (!res.ok) throw new Error('Failed to create chapter');
-    return await res.json();
-  }
+  addChapter(name, icon) {
+    const data = this.getData();
+    const chapter = { id: data.nextChapterId++, name, icon, songs: [] };
+    data.chapters.push(chapter);
+    this.saveData(data);
+    return chapter;
+  },
 
-  async updateChapter(id, data) {
-    const res = await fetch(`${this.url}/rest/v1/chapters?id=eq.${id}`, {
-      method: 'PATCH',
-      headers: { ...this._headers(), 'Prefer': 'return=representation' },
-      body: JSON.stringify(data)
-    });
-    if (!res.ok) throw new Error('Failed to update chapter');
-    return await res.json();
-  }
+  updateChapter(id, updates) {
+    const data = this.getData();
+    const ch = data.chapters.find(c => c.id === id);
+    if (ch) {
+      Object.assign(ch, updates);
+      this.saveData(data);
+    }
+    return ch;
+  },
 
-  async deleteChapter(id) {
-    const res = await fetch(`${this.url}/rest/v1/chapters?id=eq.${id}`, {
-      method: 'DELETE',
-      headers: this._headers()
-    });
-    if (!res.ok) throw new Error('Failed to delete chapter');
-  }
+  deleteChapter(id) {
+    const data = this.getData();
+    data.chapters = data.chapters.filter(c => c.id !== id);
+    this.saveData(data);
+  },
 
   // ===== SONGS =====
-  async getSongs(chapterId) {
-    const res = await fetch(`${this.url}/rest/v1/songs?chapter_id=eq.${chapterId}&order=id.asc`, {
-      headers: this._headers()
-    });
-    if (!res.ok) throw new Error('Failed to fetch songs');
-    return await res.json();
-  }
+  addSong(chapterId, title, audioUrl, publicId) {
+    const data = this.getData();
+    const ch = data.chapters.find(c => c.id === chapterId);
+    if (!ch) return null;
+    const song = {
+      id: data.nextSongId++,
+      title,
+      audio: audioUrl,
+      cloudinary_id: publicId,
+      created: new Date().toISOString()
+    };
+    if (!ch.songs) ch.songs = [];
+    ch.songs.push(song);
+    this.saveData(data);
+    return song;
+  },
 
-  async createSong(data) {
-    const res = await fetch(`${this.url}/rest/v1/songs`, {
-      method: 'POST',
-      headers: { ...this._headers(), 'Prefer': 'return=representation' },
-      body: JSON.stringify(data)
-    });
-    if (!res.ok) throw new Error('Failed to create song');
-    return await res.json();
-  }
+  deleteSong(chapterId, songId) {
+    const data = this.getData();
+    const ch = data.chapters.find(c => c.id === chapterId);
+    if (ch) {
+      ch.songs = (ch.songs || []).filter(s => s.id !== songId);
+      this.saveData(data);
+    }
+  },
 
-  async updateSong(id, data) {
-    const res = await fetch(`${this.url}/rest/v1/songs?id=eq.${id}`, {
-      method: 'PATCH',
-      headers: { ...this._headers(), 'Prefer': 'return=representation' },
-      body: JSON.stringify(data)
-    });
-    if (!res.ok) throw new Error('Failed to update song');
-    return await res.json();
-  }
+  // ===== AUTH =====
+  login(email, password) {
+    const data = this.getData();
+    if (email === data.adminEmail && password === data.adminPassword) {
+      localStorage.setItem('km_admin', JSON.stringify({ email, ts: Date.now() }));
+      return true;
+    }
+    return false;
+  },
 
-  async deleteSong(id) {
-    const res = await fetch(`${this.url}/rest/v1/songs?id=eq.${id}`, {
-      method: 'DELETE',
-      headers: this._headers()
-    });
-    if (!res.ok) throw new Error('Failed to delete song');
-  }
+  isLoggedIn() {
+    return !!localStorage.getItem('km_admin');
+  },
 
-  // ===== STORAGE (Audio Uploads) =====
-  async uploadAudio(file, path) {
-    const formData = new FormData();
-    formData.append('', file);
-    const res = await fetch(`${this.url}/storage/v1/object/audio/${path}`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${this.token || this.key}` },
-      body: formData
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message || 'Upload failed');
-    return `${this.url}/storage/v1/object/public/audio/${path}`;
-  }
+  getUser() {
+    const raw = localStorage.getItem('km_admin');
+    return raw ? JSON.parse(raw) : null;
+  },
 
-  async deleteAudio(path) {
-    const res = await fetch(`${this.url}/storage/v1/object/audio/${path}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${this.token || this.key}` }
-    });
-    if (!res.ok) throw new Error('Delete failed');
+  logout() {
+    localStorage.removeItem('km_admin');
   }
+};
 
-  getAudioUrl(path) {
-    return `${this.url}/storage/v1/object/public/audio/${path}`;
-  }
+// ============================================
+// CLOUDINARY UPLOAD
+// ============================================
+
+async function uploadToCloudinary(file, onProgress) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', 'ml_default'); // Cloudinary default unsigned preset
+  formData.append('resource_type', 'auto');
+  formData.append('folder', 'kid-moments/audio');
+
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', CLOUDINARY_UPLOAD_URL);
+
+    xhr.upload.addEventListener('progress', (e) => {
+      if (e.lengthComputable && onProgress) {
+        const pct = Math.round((e.loaded / e.total) * 100);
+        onProgress(pct);
+      }
+    });
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        const res = JSON.parse(xhr.responseText);
+        resolve({
+          url: res.secure_url,
+          publicId: res.public_id,
+          format: res.format,
+          duration: res.duration,
+          bytes: res.bytes
+        });
+      } else {
+        try {
+          const err = JSON.parse(xhr.responseText);
+          reject(new Error(err.error?.message || 'Upload failed'));
+        } catch {
+          reject(new Error(`Upload failed: ${xhr.status}`));
+        }
+      }
+    };
+
+    xhr.onerror = () => reject(new Error('Network error during upload'));
+    xhr.send(formData);
+  });
 }
 
-// ===== DB INSTANCE =====
-const db = new KidMomentsDB();
+async function deleteFromCloudinary(publicId) {
+  // Note: Deletion requires server-side API secret
+  // For now, we just remove from local data
+  console.warn('Cloudinary deletion requires server-side API. File removed from local data.');
+}
