@@ -255,8 +255,14 @@ const DB = {
 
   // ===== AUTH =====
   login(email, password) {
-    const admin = this._cache?.admin || DEFAULT_DATA.admin;
-    return email === admin.email && password === admin.password;
+    // Always use cached data or defaults
+    const data = this._cache || DEFAULT_DATA;
+    const admin = data.admin || DEFAULT_DATA.admin;
+    const inputEmail = (email || '').trim().toLowerCase();
+    const storedEmail = (admin.email || '').trim().toLowerCase();
+    const inputPass = (password || '').trim();
+    const storedPass = (admin.password || '').trim();
+    return inputEmail === storedEmail && inputPass === storedPass;
   },
 
   isLoggedIn() { return !!localStorage.getItem('km_admin'); },

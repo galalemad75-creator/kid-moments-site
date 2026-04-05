@@ -393,10 +393,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (typeof lucide !== 'undefined') lucide.createIcons();
 
   // Check auth
-  if (DB.isLoggedIn()) {
-    const user = DB.getUser();
-    document.getElementById('userEmail').textContent = user?.email || 'admin@kidmoments.com';
+  if (!DB.isLoggedIn()) {
+    window.location.href = 'admin-login.html';
+    return;
   }
+
+  const user = DB.getUser();
+  document.getElementById('userEmail').textContent = user?.email || 'admin@kidmoments.com';
 
   await loadAll();
 });
@@ -415,7 +418,12 @@ function initTheme() {
 
 // ===== LOAD DATA =====
 async function loadAll() {
-  chapters = await SYNC.loadChapters();
+  try {
+    await DB.init();
+  } catch(e) {
+    console.warn('DB init warning:', e);
+  }
+  chapters = DB.getChapters();
   renderStats();
   renderChapters();
   populateChapterSelect();
