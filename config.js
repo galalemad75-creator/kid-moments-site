@@ -258,7 +258,7 @@ const DB = {
   login(email, password) {
     // Hardcoded fallback — always works
     const HARDCODED_EMAIL = 'emadh5156@gmail.com';
-    const HARDCODED_PASS = 'KidMoments2026';
+    const HARDCODED_PASS = 'kid2026';
     
     const e = String(email || '').trim();
     const p = String(password || '').trim();
