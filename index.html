@@ -218,13 +218,20 @@
 <div class="np-bar" id="npBar">
   <div class="np-inner">
     <div class="np-info">
-      <span class="np-title" id="npTitle">--</span>
-      <span class="np-chapter" id="npChapter">--</span>
+      <img id="npImg" src="" alt="" class="np-cover" style="display:none" onerror="this.style.display='none'">
+      <div>
+        <span class="np-title" id="npTitle">--</span>
+        <span class="np-chapter" id="npChapter">--</span>
+        <div class="np-progress" onclick="seekAudio(event)"><div class="np-fill" id="npFill"></div></div>
+        <div class="np-times"><span id="npCur">0:00</span> / <span id="npDur">0:00</span></div>
+      </div>
     </div>
     <div class="np-controls">
-      <button class="np-btn" onclick="stopAudio()" aria-label="Stop"><i data-lucide="square"></i></button>
-      <button class="np-btn np-play" onclick="togglePlay()" id="playBtn" aria-label="Play/Pause"><i data-lucide="play"></i></button>
-      <button class="np-btn" onclick="closePlayer()" aria-label="Close"><i data-lucide="x"></i></button>
+      <button class="np-btn" onclick="prevTrack()" aria-label="Previous">⏮</button>
+      <button class="np-btn" onclick="stopAudio()" aria-label="Stop">⏹</button>
+      <button class="np-btn np-play" onclick="togglePlay()" id="playBtn" aria-label="Play/Pause">▶</button>
+      <button class="np-btn" onclick="nextTrack()" aria-label="Next">⏭</button>
+      <button class="np-btn" onclick="closePlayer()" aria-label="Close">✕</button>
     </div>
   </div>
   <audio id="player"></audio>

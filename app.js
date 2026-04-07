@@ -326,10 +326,12 @@ function playSong(i) {
   document.getElementById('npTitle').textContent = s.title;
   document.getElementById('npChapter').textContent = currentChapter.name;
 
-  const playBtn = document.getElementById('playBtn');
-  playBtn.innerHTML = '<i data-lucide="pause"></i>';
-  if (typeof lucide !== 'undefined') lucide.createIcons();
+  // Show cover image if available
+  const npImg = document.getElementById('npImg');
+  if (s.image) { npImg.src = s.image; npImg.style.display = 'block'; }
+  else { npImg.style.display = 'none'; }
 
+  document.getElementById('playBtn').textContent = '⏸';
   document.getElementById('npBar').style.display = 'block';
 
   document.querySelectorAll('.song-card').forEach(c => c.classList.remove('playing'));
@@ -338,42 +340,67 @@ function playSong(i) {
 }
 
 function togglePlay() {
-  const playBtn = document.getElementById('playBtn');
   if (player.paused) {
     player.play();
-    playBtn.innerHTML = '<i data-lucide="pause"></i>';
+    document.getElementById('playBtn').textContent = '⏸';
   } else {
     player.pause();
-    playBtn.innerHTML = '<i data-lucide="play"></i>';
+    document.getElementById('playBtn').textContent = '▶';
   }
-  if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 function stopAudio() {
   player.pause();
   player.currentTime = 0;
-  const playBtn = document.getElementById('playBtn');
-  playBtn.innerHTML = '<i data-lucide="play"></i>';
-  if (typeof lucide !== 'undefined') lucide.createIcons();
+  document.getElementById('playBtn').textContent = '▶';
+  document.getElementById('npFill').style.width = '0%';
+  document.getElementById('npCur').textContent = '0:00';
+}
+
+function prevTrack() {
+  if (currentChapter && currentSong > 0) playSong(currentSong - 1);
+}
+
+function nextTrack() {
+  if (currentChapter && currentSong + 1 < currentChapter.songs.length) playSong(currentSong + 1);
+}
+
+function seekAudio(e) {
+  const bar = e.currentTarget;
+  const rect = bar.getBoundingClientRect();
+  const pct = (e.clientX - rect.left) / rect.width;
+  player.currentTime = pct * player.duration;
+}
+
+function formatTime(s) {
+  if (isNaN(s)) return '0:00';
+  const m = Math.floor(s / 60);
+  return m + ':' + Math.floor(s % 60).toString().padStart(2, '0');
 }
 
 function closePlayer() {
   player.pause();
   player.src = '';
   document.getElementById('npBar').style.display = 'none';
+  document.getElementById('npFill').style.width = '0%';
   document.querySelectorAll('.song-card').forEach(c => c.classList.remove('playing'));
   currentSong = -1;
 }
 
-// Auto-play next song
+// Progress & time update
 if (player) {
+  player.addEventListener('timeupdate', () => {
+    if (player.duration) {
+      document.getElementById('npFill').style.width = (player.currentTime / player.duration * 100) + '%';
+      document.getElementById('npCur').textContent = formatTime(player.currentTime);
+      document.getElementById('npDur').textContent = formatTime(player.duration);
+    }
+  });
   player.addEventListener('ended', () => {
-    if (currentChapter && currentChapter.songs && currentSong + 1 < currentChapter.songs.length) {
+    if (currentChapter && currentSong + 1 < currentChapter.songs.length) {
       playSong(currentSong + 1);
     } else {
-      const playBtn = document.getElementById('playBtn');
-      playBtn.innerHTML = '<i data-lucide="play"></i>';
-      if (typeof lucide !== 'undefined') lucide.createIcons();
+      document.getElementById('playBtn').textContent = '▶';
     }
   });
 }
