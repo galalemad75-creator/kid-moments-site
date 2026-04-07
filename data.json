@@ -2,23 +2,257 @@
   "chapters": [
     {
       "id": 1,
-      "name": "test",
-      "icon": "🧪",
-      "songs": [
-        {
-          "id": 1,
-          "title": "test song",
-          "audio": "https://test.com/test.mp3"
-        }
-      ]
+      "name": "Voice (Speaking Up)",
+      "icon": "🗣️",
+      "songs": []
+    },
+    {
+      "id": 2,
+      "name": "Saying No to Strangers",
+      "icon": "🚫",
+      "songs": []
+    },
+    {
+      "id": 3,
+      "name": "Using Indoor Voices",
+      "icon": "🤫",
+      "songs": []
+    },
+    {
+      "id": 4,
+      "name": "My Dry Bed",
+      "icon": "🛏️",
+      "songs": []
+    },
+    {
+      "id": 5,
+      "name": "Thumb Sucking",
+      "icon": "👍",
+      "songs": []
+    },
+    {
+      "id": 6,
+      "name": "Managing Whining",
+      "icon": "😤",
+      "songs": []
+    },
+    {
+      "id": 7,
+      "name": "Sharing with Others",
+      "icon": "🤝",
+      "songs": []
+    },
+    {
+      "id": 8,
+      "name": "Listening to Adults",
+      "icon": "👂",
+      "songs": []
+    },
+    {
+      "id": 9,
+      "name": "Following Rules",
+      "icon": "📋",
+      "songs": []
+    },
+    {
+      "id": 10,
+      "name": "Handling Anger",
+      "icon": "😠",
+      "songs": []
+    },
+    {
+      "id": 11,
+      "name": "Asking for Help",
+      "icon": "🙋",
+      "songs": []
+    },
+    {
+      "id": 12,
+      "name": "Waiting My Turn",
+      "icon": "⏳",
+      "songs": []
+    },
+    {
+      "id": 13,
+      "name": "Playing Nicely",
+      "icon": "🎮",
+      "songs": []
+    },
+    {
+      "id": 14,
+      "name": "Saying Please and Thank You",
+      "icon": "🙏",
+      "songs": []
+    },
+    {
+      "id": 15,
+      "name": "Using Kind Words",
+      "icon": "💬",
+      "songs": []
+    },
+    {
+      "id": 16,
+      "name": "Keeping Hands to Myself",
+      "icon": "✋",
+      "songs": []
+    },
+    {
+      "id": 17,
+      "name": "Tidying Up",
+      "icon": "🧹",
+      "songs": []
+    },
+    {
+      "id": 18,
+      "name": "Brushing My Teeth",
+      "icon": "🦷",
+      "songs": []
+    },
+    {
+      "id": 19,
+      "name": "Getting Dressed",
+      "icon": "👕",
+      "songs": []
+    },
+    {
+      "id": 20,
+      "name": "Eating Healthy",
+      "icon": "🥗",
+      "songs": []
+    },
+    {
+      "id": 21,
+      "name": "Going to Bed on Time",
+      "icon": "🌙",
+      "songs": []
+    },
+    {
+      "id": 22,
+      "name": "Washing My Hands",
+      "icon": "🧼",
+      "songs": []
+    },
+    {
+      "id": 23,
+      "name": "Sitting Still",
+      "icon": "🧘",
+      "songs": []
+    },
+    {
+      "id": 24,
+      "name": "Walking Safely",
+      "icon": "🚶",
+      "songs": []
+    },
+    {
+      "id": 25,
+      "name": "Being Honest",
+      "icon": "💎",
+      "songs": []
+    },
+    {
+      "id": 26,
+      "name": "Saying Sorry",
+      "icon": "😔",
+      "songs": []
+    },
+    {
+      "id": 27,
+      "name": "Trying New Foods",
+      "icon": "🍽️",
+      "songs": []
+    },
+    {
+      "id": 28,
+      "name": "Managing Frustration",
+      "icon": "💪",
+      "songs": []
+    },
+    {
+      "id": 29,
+      "name": "Bedtime Routine",
+      "icon": "🌜",
+      "songs": []
+    },
+    {
+      "id": 30,
+      "name": "Morning Routine",
+      "icon": "☀️",
+      "songs": []
+    },
+    {
+      "id": 31,
+      "name": "Tying Shoes",
+      "icon": "👟",
+      "songs": []
+    },
+    {
+      "id": 32,
+      "name": "Table Manners",
+      "icon": "🍴",
+      "songs": []
+    },
+    {
+      "id": 33,
+      "name": "Voice (Speaking Up) 2",
+      "icon": "🗣️",
+      "songs": []
+    },
+    {
+      "id": 34,
+      "name": "Saying No to Strangers 2",
+      "icon": "🚫",
+      "songs": []
+    },
+    {
+      "id": 35,
+      "name": "Using Indoor Voices 2",
+      "icon": "🤫",
+      "songs": []
+    },
+    {
+      "id": 36,
+      "name": "Handling Anger 2",
+      "icon": "😠",
+      "songs": []
+    },
+    {
+      "id": 37,
+      "name": "Managing Frustration 2",
+      "icon": "💪",
+      "songs": []
+    },
+    {
+      "id": 38,
+      "name": "Managing Whining 2",
+      "icon": "😤",
+      "songs": []
+    },
+    {
+      "id": 39,
+      "name": "Brushing Teeth 2",
+      "icon": "🦷",
+      "songs": []
+    },
+    {
+      "id": 40,
+      "name": "Getting Dressed 2",
+      "icon": "👕",
+      "songs": []
+    },
+    {
+      "id": 41,
+      "name": "Washing Hands 2",
+      "icon": "🧼",
+      "songs": []
     }
   ],
   "nextId": {
-    "chapter": 2,
-    "song": 2
+    "chapter": 42,
+    "song": 1
   },
   "admin": {
-    "email": "test@test.com",
-    "password": "test"
+    "email": "emadh5156@gmail.com",
+    "password": "KidMoments2026!"
   }
 }
