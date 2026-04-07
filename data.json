@@ -22,7 +22,16 @@
       "id": 4,
       "name": "My Dry Bed",
       "icon": "🛏️",
-      "songs": []
+      "songs": [
+        {
+          "id": 1,
+          "title": "My Dry Bed 1",
+          "audio": "https://res.cloudinary.com/dse1s0loh/video/upload/v1775593984/kid-moments/audio/aganmtwvxpqe94phyoe8.mp3",
+          "image": "https://res.cloudinary.com/dse1s0loh/image/upload/v1775593991/kid-moments/audio/rh1bd56ucgprky3xviqu.png",
+          "cloudinary_id": "kid-moments/audio/aganmtwvxpqe94phyoe8",
+          "created": "2026-04-07T20:33:12.677Z"
+        }
+      ]
     },
     {
       "id": 5,
@@ -249,10 +258,10 @@
   ],
   "nextId": {
     "chapter": 42,
-    "song": 1
+    "song": 2
   },
   "admin": {
     "email": "emadh5156@gmail.com",
-    "password": "KidMoments2026!"
+    "password": "KidMoments2026"
   }
 }
