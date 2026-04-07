@@ -86,7 +86,7 @@ const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOU
 async function uploadToCloudinary(file, onProgress) {
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('upload_preset', 'kid-moments');
+  formData.append('upload_preset', 'kidmom');
   formData.append('resource_type', 'auto');
   formData.append('folder', 'kid-moments/audio');
 
