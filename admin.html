@@ -3,669 +3,429 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Dashboard — Kid Moments</title>
+<title>Admin — Kid Moments</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌟</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <style>
-  .admin-layout {
-    padding-top: calc(var(--header-height) + 30px);
-    max-width: 1100px;
-    margin: 0 auto;
-    padding-left: 24px;
-    padding-right: 24px;
-    padding-bottom: 80px;
-  }
-  .admin-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 32px;
-    flex-wrap: wrap;
-    gap: 16px;
-  }
-  .admin-header h1 { font-size: 1.8rem; font-weight: 800; }
-  .admin-header .user-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-  }
-  .admin-tabs {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 32px;
-    border-bottom: 2px solid var(--border);
-    padding-bottom: 0;
-  }
-  .admin-tab {
-    padding: 12px 24px;
-    font-weight: 700;
-    font-size: 0.95rem;
-    color: var(--text-secondary);
-    border: none;
-    background: none;
-    cursor: pointer;
-    border-bottom: 3px solid transparent;
-    margin-bottom: -2px;
-    transition: all 0.2s;
-  }
-  .admin-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-  .admin-tab:hover { color: var(--accent); }
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
+  .admin-wrap { max-width: 900px; margin: 0 auto; padding: calc(var(--header-height, 70px) + 24px) 20px 60px; }
 
-  /* Stats bar */
-  .stats-bar {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 16px;
-    margin-bottom: 32px;
-  }
-  .stats-item {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 20px;
-    text-align: center;
-  }
-  .stats-item .s-num { font-size: 1.8rem; font-weight: 800; color: var(--accent); display: block; }
-  .stats-item .s-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
+  /* Login */
+  .login-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 40px; max-width: 400px; margin: 80px auto; text-align: center; box-shadow: var(--shadow-lg); }
+  .login-card h2 { font-size: 1.4rem; margin-bottom: 8px; }
+  .login-card p { color: var(--text-secondary); margin-bottom: 24px; font-size: 0.9rem; }
+  .login-card .form-group { margin-bottom: 16px; text-align: left; }
+  .login-card .form-group label { display: block; font-weight: 700; margin-bottom: 6px; font-size: 0.85rem; }
+  .login-card .form-group input { width: 100%; padding: 12px 16px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-family: inherit; font-size: 0.95rem; }
+  .login-card .form-group input:focus { outline: none; border-color: var(--accent); }
+  .login-card .login-btn { width: 100%; padding: 14px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-full); font-family: inherit; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 8px; }
+  .login-card .login-btn:hover { background: var(--accent-hover); }
+  .login-card .login-btn:disabled { opacity: 0.6; }
+  .login-error { color: #e74c3c; font-weight: 600; font-size: 0.85rem; margin-top: 12px; min-height: 20px; }
+  .login-back { display: block; margin-top: 20px; color: var(--text-muted); font-size: 0.85rem; }
+
+  /* Dashboard header */
+  .dash-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+  .dash-header h1 { font-size: 1.6rem; font-weight: 800; }
+
+  /* Stats */
+  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+  .stat-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; text-align: center; }
+  .stat-box .num { font-size: 1.6rem; font-weight: 800; color: var(--accent); display: block; }
+  .stat-box .lbl { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 2px solid var(--border); }
+  .tab { padding: 10px 20px; font-weight: 700; font-size: 0.9rem; color: var(--text-secondary); border: none; background: none; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: 0.2s; }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab:hover { color: var(--accent); }
+  .panel { display: none; } .panel.active { display: block; }
 
   /* Chapter list */
-  .chapter-list { display: flex; flex-direction: column; gap: 12px; }
-  .chapter-item {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    transition: all 0.2s;
-  }
-  .chapter-item:hover { border-color: var(--accent); }
-  .chapter-item .ch-icon { font-size: 1.8rem; }
-  .chapter-item .ch-info { flex: 1; }
-  .chapter-item .ch-name { font-weight: 700; font-size: 1rem; }
-  .chapter-item .ch-count { font-size: 0.85rem; color: var(--text-muted); }
-  .chapter-item .ch-actions { display: flex; gap: 8px; }
+  .ch-list { display: flex; flex-direction: column; gap: 10px; }
+  .ch-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; }
+  .ch-head { display: flex; align-items: center; gap: 12px; }
+  .ch-head .icon { font-size: 1.6rem; }
+  .ch-head .info { flex: 1; }
+  .ch-head .name { font-weight: 700; }
+  .ch-head .count { font-size: 0.8rem; color: var(--text-muted); }
+  .ch-head .actions { display: flex; gap: 6px; }
 
-  /* Song list */
-  .song-list { margin-top: 12px; padding-left: 20px; }
-  .song-item {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 14px 16px;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .song-item .s-title { flex: 1; font-weight: 600; font-size: 0.9rem; }
-  .song-item .s-actions { display: flex; gap: 6px; }
+  /* Songs inside chapter */
+  .song-list { margin-top: 10px; padding-left: 16px; }
+  .song-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 6px; }
+  .song-row .title { flex: 1; font-weight: 600; font-size: 0.85rem; }
+  .song-row .acts { display: flex; gap: 4px; }
 
-  /* Forms */
-  .admin-form {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 32px;
-    margin-bottom: 24px;
-  }
-  .admin-form h3 { margin-bottom: 20px; font-size: 1.1rem; }
-  .form-row { display: flex; gap: 16px; flex-wrap: wrap; }
-  .form-row .form-group { flex: 1; min-width: 200px; }
+  /* Admin form */
+  .form-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 20px; }
+  .form-card h3 { margin-bottom: 16px; font-size: 1rem; }
+  .form-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .form-row .form-group { flex: 1; min-width: 180px; }
 
-  /* Buttons */
-  .btn-sm {
-    padding: 8px 16px;
-    font-size: 0.8rem;
-    border-radius: var(--radius-full);
-    font-weight: 700;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s;
-  }
-  .btn-sm svg { width: 14px; height: 14px; }
-  .btn-danger { background: #e74c3c; color: #fff; border: none; }
-  .btn-danger:hover { background: #c0392b; }
-  .btn-success { background: #27ae60; color: #fff; border: none; }
-  .btn-success:hover { background: #219a52; }
-  .btn-warning { background: #f39c12; color: #fff; border: none; }
-  .btn-warning:hover { background: #d68910; }
-  .btn-ghost {
-    background: var(--bg-secondary);
-    color: var(--text-secondary);
-    border: 1px solid var(--border);
-  }
-  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  /* File input */
+  .file-wrap { position: relative; }
+  .file-wrap input[type="file"] { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+  .file-label { display: block; padding: 12px; background: var(--bg-primary); border: 2px dashed var(--border); border-radius: var(--radius-sm); text-align: center; color: var(--text-muted); font-weight: 600; cursor: pointer; font-size: 0.85rem; }
+  .file-label:hover { border-color: var(--accent); color: var(--accent); }
 
   /* Upload progress */
-  .upload-progress {
-    display: none;
-    margin-top: 12px;
-    padding: 12px;
-    background: var(--bg-secondary);
-    border-radius: var(--radius-sm);
-  }
-  .upload-bar {
-    height: 6px;
-    background: var(--border);
-    border-radius: 3px;
-    overflow: hidden;
-    margin-top: 8px;
-  }
-  .upload-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 3px;
-    width: 0%;
-    transition: width 0.3s;
-  }
+  .upload-bar { display: none; margin-top: 10px; padding: 10px; background: var(--bg-secondary); border-radius: var(--radius-sm); font-size: 0.85rem; }
+  .upload-bar .bar { height: 6px; background: var(--border); border-radius: 3px; margin-top: 6px; overflow: hidden; }
+  .upload-bar .fill { height: 100%; background: var(--accent); border-radius: 3px; width: 0%; transition: 0.3s; }
 
-  /* File input styling */
-  .file-input-wrapper {
-    position: relative;
-    display: inline-block;
-    width: 100%;
-  }
-  .file-input-wrapper input[type="file"] {
-    position: absolute;
-    opacity: 0;
-    width: 100%;
-    height: 100%;
-    cursor: pointer;
-  }
-  .file-input-label {
-    display: block;
-    padding: 14px 18px;
-    background: var(--bg-primary);
-    border: 2px dashed var(--border);
-    border-radius: var(--radius-sm);
-    text-align: center;
-    color: var(--text-muted);
-    font-weight: 600;
-    transition: all 0.2s;
-    cursor: pointer;
-  }
-  .file-input-label:hover { border-color: var(--accent); color: var(--accent); }
+  /* Small buttons */
+  .btn-s { padding: 6px 14px; font-size: 0.78rem; border-radius: var(--radius-full); font-weight: 700; display: inline-flex; align-items: center; gap: 4px; border: none; cursor: pointer; transition: 0.2s; font-family: inherit; }
+  .btn-s.red { background: #e74c3c; color: #fff; } .btn-s.red:hover { background: #c0392b; }
+  .btn-s.green { background: #27ae60; color: #fff; } .btn-s.green:hover { background: #219a52; }
+  .btn-s.orange { background: #f39c12; color: #fff; } .btn-s.orange:hover { background: #d68910; }
+  .btn-s.ghost { background: var(--bg-secondary); color: var(--text-secondary); border: 1px solid var(--border); }
+  .btn-s.ghost:hover { border-color: var(--accent); color: var(--accent); }
 
-  /* Toast notification */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    z-index: 10000;
-    padding: 16px 24px;
-    border-radius: var(--radius-md);
-    font-weight: 700;
-    font-size: 0.9rem;
-    box-shadow: var(--shadow-lg);
-    transform: translateY(100px);
-    opacity: 0;
-    transition: all 0.4s ease;
-  }
+  /* Toast */
+  .toast { position: fixed; bottom: 20px; right: 20px; z-index: 10000; padding: 14px 22px; border-radius: var(--radius-md); font-weight: 700; font-size: 0.85rem; box-shadow: var(--shadow-lg); transform: translateY(100px); opacity: 0; transition: 0.4s; }
   .toast.show { transform: translateY(0); opacity: 1; }
   .toast.success { background: #27ae60; color: #fff; }
   .toast.error { background: #e74c3c; color: #fff; }
   .toast.info { background: var(--accent); color: #fff; }
-</style>
-</head>
-<body>
 
+  @media (max-width: 600px) {
+    .stats-row { grid-template-columns: 1fr; }
+    .form-row { flex-direction: column; }
+    .tabs { overflow-x: auto; }
+  }
+</style>
+</head<body>
 <header class="header" id="header">
   <div class="container nav-inner">
-    <a href="index.html" class="logo">
-      <span class="logo-icon">🌟</span>
-      <span class="logo-text">Kid <span class="accent">Moments</span> Admin</span>
-    </a>
+    <a href="index.html" class="logo"><span class="logo-icon">🌟</span><span class="logo-text">Kid Moments</span></a>
     <div class="nav-actions">
-      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
-        <i data-lucide="sun" class="icon-light"></i>
-        <i data-lucide="moon" class="icon-dark"></i>
-      </button>
-      <button class="btn btn-sm btn-ghost" onclick="handleLogout()" id="logoutBtn">
-        <i data-lucide="log-out"></i> Logout
+      <button class="btn btn-sm" style="background:var(--accent);color:#fff;font-size:0.8rem" onclick="if(isLoggedIn){DB.logout();location.reload()}else{location.href='index.html'}">
+        <span id="navAction">🏠 Home</span>
       </button>
     </div>
   </div>
 </header>
 
-<div class="admin-layout">
-  <div class="admin-header">
-    <h1>📊 Dashboard</h1>
-    <div class="user-info">
-      <i data-lucide="user"></i>
-      <span id="userEmail">admin@kidmoments.com</span>
-    </div>
-  </div>
-
-  <!-- Stats -->
-  <div class="stats-bar">
-    <div class="stats-item">
-      <span class="s-num" id="totalChapters">0</span>
-      <span class="s-label">Chapters</span>
-    </div>
-    <div class="stats-item">
-      <span class="s-num" id="totalSongs">0</span>
-      <span class="s-label">Songs</span>
-    </div>
-    <div class="stats-item">
-      <span class="s-num" id="totalAudio">0</span>
-      <span class="s-label">Audio Files</span>
-    </div>
-  </div>
-
-  <!-- Tabs -->
-  <div class="admin-tabs">
-    <button class="admin-tab active" onclick="switchTab('chapters')">📚 Chapters</button>
-    <button class="admin-tab" onclick="switchTab('songs')">🎵 Upload Song</button>
-    <button class="admin-tab" onclick="switchTab('settings')">⚙️ Settings</button>
-  </div>
-
-  <!-- TAB: Chapters -->
-  <div class="tab-panel active" id="tab-chapters">
-    <div class="admin-form">
-      <h3>➕ Add New Chapter</h3>
-      <form onsubmit="addChapter(event)">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="chName">Chapter Name *</label>
-            <input type="text" id="chName" required placeholder="e.g., Managing Anxiety">
-          </div>
-          <div class="form-group">
-            <label for="chIcon">Icon (emoji) *</label>
-            <input type="text" id="chIcon" required placeholder="e.g., 😰" maxlength="4">
-          </div>
-        </div>
-        <button type="submit" class="btn btn-success btn-sm" style="margin-top:12px">
-          <i data-lucide="plus"></i> Add Chapter
-        </button>
-      </form>
-    </div>
-
-    <h3 style="margin-bottom:16px;">📚 All Chapters</h3>
-    <div class="chapter-list" id="chapterList">
-      <p style="color:var(--text-muted); text-align:center; padding:40px;">Loading chapters...</p>
-    </div>
-  </div>
-
-  <!-- TAB: Upload Song -->
-  <div class="tab-panel" id="tab-songs">
-    <div class="admin-form">
-      <h3>🎵 Upload New Song</h3>
-      <form onsubmit="uploadSong(event)">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="songChapter">Chapter *</label>
-            <select id="songChapter" required>
-              <option value="">Select chapter...</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="songTitle">Song Title *</label>
-            <input type="text" id="songTitle" required placeholder="e.g., Episode 1 - Deep Breathing">
-          </div>
-        </div>
-        <div class="form-group" style="margin-top: 16px;">
-          <label>Audio File (MP3, WAV, OGG) *</label>
-          <div class="file-input-wrapper">
-            <input type="file" id="songFile" accept="audio/*" required onchange="updateFileName(this)">
-            <div class="file-input-label" id="fileLabel">
-              📎 Click to select audio file or drag & drop
-            </div>
-          </div>
-        </div>
-        <div class="upload-progress" id="uploadProgress">
-          <span id="uploadStatus">Uploading...</span>
-          <div class="upload-bar">
-            <div class="upload-fill" id="uploadFill"></div>
-          </div>
-        </div>
-        <button type="submit" class="btn btn-success btn-sm" style="margin-top:16px" id="uploadBtn">
-          <i data-lucide="upload"></i> Upload Song
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- TAB: Settings -->
-  <div class="tab-panel" id="tab-settings">
-    <div class="admin-form">
-      <h3>🔑 GitHub Token (للمزامنة)</h3>
-      <p style="color:var(--text-secondary); margin-bottom:20px;">البيانات محفوظة على الـ GitHub repo مباشرة. أدخل الـ token عشان التغييرات تترفع تلقائي.</p>
+<!-- ===== LOGIN ===== -->
+<div id="loginSection">
+  <div class="login-card">
+    <div style="font-size:2.5rem;margin-bottom:12px">🔐</div>
+    <h2>Admin Login</h2>
+    <p>Sign in to manage chapters and upload songs</p>
+    <form onsubmit="doLogin(event)">
       <div class="form-group">
-        <label>GitHub Personal Access Token</label>
-        <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxx">
+        <label>Email</label>
+        <input type="email" id="loginEmail" value="emadh5156@gmail.com" required>
       </div>
-      <button class="btn btn-success btn-sm" style="margin-top:16px" onclick="saveToken()">
-        <i data-lucide="save"></i> حفظ الـ Token
-      </button>
-      <p style="color:var(--text-muted); font-size:0.85rem; margin-top:16px;">
-        <a href="https://github.com/settings/tokens/new" target="_blank" rel="noopener" style="color:var(--accent);">أنشئ token جديد</a>
-        — صلاحيات مطلوبة: <strong>repo</strong> (Full control of private repositories)
-      </p>
-    </div>
-
-    <div class="admin-form">
-      <h3>🔐 تغيير كلمة المرور</h3>
       <div class="form-group">
-        <label>Admin Email</label>
-        <input type="email" id="adminEmail" placeholder="emadh5156@gmail.com">
+        <label>Password</label>
+        <input type="password" id="loginPass" required placeholder="Enter password">
       </div>
-      <div class="form-group" style="margin-top:16px;">
-        <label>كلمة المرور الجديدة</label>
-        <input type="password" id="adminPassword" placeholder="أدخل كلمة مرور جديدة">
-      </div>
-      <button class="btn btn-success btn-sm" style="margin-top:16px" onclick="savePassword()">
-        <i data-lucide="save"></i> حفظ
-      </button>
-    </div>
-
-    <div class="admin-form">
-      <h3>🗑️ إعادة تعيين البيانات</h3>
-      <p style="color:var(--text-secondary); margin-bottom:16px;">حذف كل الفصول والأغاني والرجوع للإعدادات الافتراضية.</p>
-      <button class="btn-sm btn-danger" onclick="resetData()">
-        <i data-lucide="alert-triangle"></i> إعادة تعيين
-      </button>
-    </div>
+      <button type="submit" class="login-btn" id="loginBtn">🔓 Sign In</button>
+      <div class="login-error" id="loginError"></div>
+    </form>
+    <a href="index.html" class="login-back">← Back to Home</a>
   </div>
 </div>
 
-<!-- Toast -->
+<!-- ===== DASHBOARD ===== -->
+<div id="dashSection" style="display:none">
+<div class="admin-wrap">
+  <div class="dash-header">
+    <h1>📊 Dashboard</h1>
+    <button class="btn-s ghost" onclick="DB.logout();location.reload()">🚪 Logout</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-box"><span class="num" id="sChapters">0</span><span class="lbl">Chapters</span></div>
+    <div class="stat-box"><span class="num" id="sSongs">0</span><span class="lbl">Songs</span></div>
+    <div class="stat-box"><span class="num" id="sAudio">0</span><span class="lbl">Audio Files</span></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" data-tab="chapters">📚 Chapters</button>
+    <button class="tab" data-tab="upload">🎵 Upload</button>
+    <button class="tab" data-tab="settings">⚙️ Settings</button>
+  </div>
+
+  <!-- Chapters Panel -->
+  <div class="panel active" id="p-chapters">
+    <div class="form-card">
+      <h3>➕ Add Chapter</h3>
+      <form onsubmit="addChapter(event)">
+        <div class="form-row">
+          <div class="form-group"><label>Name *</label><input type="text" id="chName" required placeholder="Chapter name"></div>
+          <div class="form-group"><label>Icon *</label><input type="text" id="chIcon" required placeholder="📚" maxlength="4"></div>
+        </div>
+        <button type="submit" class="btn-s green" style="margin-top:10px">➕ Add</button>
+      </form>
+    </div>
+    <div class="ch-list" id="chList"><p style="text-align:center;color:var(--text-muted);padding:30px">Loading...</p></div>
+  </div>
+
+  <!-- Upload Panel -->
+  <div class="panel" id="p-upload">
+    <div class="form-card">
+      <h3>🎵 Upload Song</h3>
+      <form onsubmit="uploadSong(event)">
+        <div class="form-row">
+          <div class="form-group"><label>Chapter *</label><select id="songChapter" required><option value="">Select...</option></select></div>
+          <div class="form-group"><label>Title *</label><input type="text" id="songTitle" required placeholder="Song title"></div>
+        </div>
+        <div class="form-group" style="margin-top:12px">
+          <label>Audio File *</label>
+          <div class="file-wrap">
+            <input type="file" id="songFile" accept="audio/*" required onchange="document.getElementById('fileLbl').textContent='✅ '+this.files[0].name">
+            <div class="file-label" id="fileLbl">📎 Click to select audio file</div>
+          </div>
+        </div>
+        <div class="upload-bar" id="upBar">
+          <span id="upStatus">Uploading...</span>
+          <div class="bar"><div class="fill" id="upFill"></div></div>
+        </div>
+        <button type="submit" class="btn-s green" style="margin-top:12px" id="upBtn">📤 Upload</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Settings Panel -->
+  <div class="panel" id="p-settings">
+    <div class="form-card">
+      <h3>🔑 GitHub Token</h3>
+      <div class="form-group"><label>Token</label><input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxx"></div>
+      <button class="btn-s green" style="margin-top:8px" onclick="saveToken()">💾 Save Token</button>
+      <p style="color:var(--text-muted);font-size:0.8rem;margin-top:10px">
+        <a href="https://github.com/settings/tokens/new" target="_blank" style="color:var(--accent)">Create token</a> — صلاحية <strong>repo</strong> مطلوبة
+      </p>
+    </div>
+    <div class="form-card">
+      <h3>🗑️ Reset All Data</h3>
+      <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:12px">Delete everything and go back to defaults.</p>
+      <button class="btn-s red" onclick="resetData()">⚠️ Reset</button>
+    </div>
+  </div>
+</div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="config.js"></script>
 <script src="supabase-sync.js"></script>
 <script>
 let chapters = [];
+let isLoggedIn = false;
+
+// ===== HARDCODED AUTH =====
+const ADMIN_EMAIL = 'emadh5156@gmail.com';
+const ADMIN_PASS  = 'KidMoments2026';
 
 document.addEventListener('DOMContentLoaded', async () => {
-  initTheme();
-  if (typeof lucide !== 'undefined') lucide.createIcons();
+  // Theme
+  const saved = localStorage.getItem('km_theme');
+  const dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
 
-  // Check auth
-  if (!DB.isLoggedIn()) {
-    window.location.href = 'admin-login.html';
-    return;
+  // Auth check
+  if (localStorage.getItem('km_admin')) {
+    isLoggedIn = true;
+    showDashboard();
   }
 
-  const user = DB.getUser();
-  document.getElementById('userEmail').textContent = user?.email || 'admin@kidmoments.com';
-
-  await loadAll();
+  // Tab switching
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('p-' + btn.dataset.tab).classList.add('active');
+    });
+  });
 });
 
-function initTheme() {
-  const saved = localStorage.getItem('km_theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  document.documentElement.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
-  document.getElementById('themeToggle')?.addEventListener('click', () => {
-    const current = document.documentElement.getAttribute('data-theme');
-    const next = current === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('km_theme', next);
-  });
+// ===== LOGIN =====
+function doLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value.trim();
+  const errEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
+
+  btn.disabled = true;
+  btn.textContent = 'Checking...';
+  errEl.textContent = '';
+
+  setTimeout(() => {
+    if ((email === ADMIN_EMAIL && pass === ADMIN_PASS) ||
+        (DB._cache?.admin && email === DB._cache.admin.email && pass === DB._cache.admin.password)) {
+      localStorage.setItem('km_admin', JSON.stringify({ email, ts: Date.now() }));
+      isLoggedIn = true;
+      showDashboard();
+    } else {
+      errEl.textContent = '❌ Invalid email or password';
+      btn.disabled = false;
+      btn.textContent = '🔓 Sign In';
+    }
+  }, 300);
 }
 
-// ===== LOAD DATA =====
-async function loadAll() {
-  try {
-    await DB.init();
-  } catch(e) {
-    console.warn('DB init warning:', e);
-  }
+// ===== SHOW DASHBOARD =====
+async function showDashboard() {
+  document.getElementById('loginSection').style.display = 'none';
+  document.getElementById('dashSection').style.display = 'block';
+  document.getElementById('navAction').textContent = '🚪 Logout';
+
+  try { await DB.init(); } catch(e) { console.warn('DB init:', e); }
   chapters = DB.getChapters();
   renderStats();
   renderChapters();
-  populateChapterSelect();
+  populateSelect();
 }
 
 function renderStats() {
-  const totalSongs = chapters.reduce((sum, c) => sum + (c.songs?.length || 0), 0);
-  document.getElementById('totalChapters').textContent = chapters.length;
-  document.getElementById('totalSongs').textContent = totalSongs;
-  document.getElementById('totalAudio').textContent = totalSongs;
+  const songs = chapters.reduce((s, c) => s + (c.songs?.length || 0), 0);
+  document.getElementById('sChapters').textContent = chapters.length;
+  document.getElementById('sSongs').textContent = songs;
+  document.getElementById('sAudio').textContent = songs;
 }
 
 function renderChapters() {
-  const list = document.getElementById('chapterList');
-  if (!chapters.length) {
-    list.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:40px;">No chapters yet. Add your first chapter above! 👆</p>';
-    return;
-  }
+  const el = document.getElementById('chList');
+  if (!chapters.length) { el.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:30px">No chapters. Add one above! 👆</p>'; return; }
 
-  list.innerHTML = chapters.map(c => `
-    <div class="chapter-item" id="ch-${c.id}">
-      <span class="ch-icon">${c.icon}</span>
-      <div class="ch-info">
-        <div class="ch-name">${c.name}</div>
-        <div class="ch-count">${(c.songs || []).length} song${(c.songs || []).length !== 1 ? 's' : ''}</div>
-        ${c.songs?.length ? `
-          <div class="song-list">
-            ${c.songs.map(s => `
-              <div class="song-item">
-                <span class="s-title">🎵 ${s.title}</span>
-                <div class="s-actions">
-                  <button class="btn-sm btn-ghost" onclick="playPreview('${s.audio}')">
-                    <i data-lucide="play"></i>
-                  </button>
-                  <button class="btn-sm btn-danger" onclick="deleteSong(${c.id}, ${s.id})">
-                    <i data-lucide="trash-2"></i>
-                  </button>
-                </div>
+  el.innerHTML = chapters.map(c => `
+    <div class="ch-item">
+      <div class="ch-head">
+        <span class="icon">${c.icon}</span>
+        <div class="info">
+          <div class="name">${c.name}</div>
+          <div class="count">${(c.songs||[]).length} song${(c.songs||[]).length!==1?'s':''}</div>
+          ${c.songs?.length ? `<div class="song-list">${c.songs.map(s=>`
+            <div class="song-row">
+              <span class="title">🎵 ${s.title}</span>
+              <div class="acts">
+                <button class="btn-s ghost" onclick="new Audio('${s.audio}').play().catch(()=>toast('Cannot play','error'))">▶</button>
+                <button class="btn-s red" onclick="delSong(${c.id},${s.id})">🗑</button>
               </div>
-            `).join('')}
-          </div>
-        ` : ''}
-      </div>
-      <div class="ch-actions">
-        <button class="btn-sm btn-warning" onclick="editChapter(${c.id})">
-          <i data-lucide="edit-3"></i>
-        </button>
-        <button class="btn-sm btn-danger" onclick="deleteChapter(${c.id})">
-          <i data-lucide="trash-2"></i>
-        </button>
+            </div>`).join('')}</div>` : ''}
+        </div>
+        <div class="actions">
+          <button class="btn-s orange" onclick="editCh(${c.id})">✏️</button>
+          <button class="btn-s red" onclick="delCh(${c.id})">🗑️</button>
+        </div>
       </div>
     </div>
   `).join('');
-
-  if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-function populateChapterSelect() {
+function populateSelect() {
   const sel = document.getElementById('songChapter');
   sel.innerHTML = '<option value="">Select chapter...</option>';
-  chapters.forEach(c => {
-    sel.innerHTML += `<option value="${c.id}">${c.icon} ${c.name}</option>`;
-  });
+  chapters.forEach(c => sel.innerHTML += `<option value="${c.id}">${c.icon} ${c.name}</option>`);
 }
 
-// ===== TAB SWITCHING =====
-function switchTab(name) {
-  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById('tab-' + name).classList.add('active');
-}
-
-// ===== ADD CHAPTER =====
+// ===== CHAPTER CRUD =====
 async function addChapter(e) {
   e.preventDefault();
   const name = document.getElementById('chName').value.trim();
   const icon = document.getElementById('chIcon').value.trim();
   if (!name || !icon) return;
-
-  try {
-    await SYNC.addChapter(name, icon);
-    document.getElementById('chName').value = '';
-    document.getElementById('chIcon').value = '';
-    showToast('Chapter added!', 'success');
-    await loadAll();
-  } catch (err) {
-    showToast('Error: ' + err.message, 'error');
-  }
+  await SYNC.addChapter(name, icon);
+  document.getElementById('chName').value = '';
+  document.getElementById('chIcon').value = '';
+  toast('Chapter added!', 'success');
+  chapters = DB.getChapters(); renderStats(); renderChapters(); populateSelect();
 }
 
-// ===== EDIT CHAPTER =====
-async function editChapter(id) {
+async function editCh(id) {
   const ch = chapters.find(c => c.id === id);
   if (!ch) return;
-  const newName = prompt('Chapter name:', ch.name);
-  if (newName === null) return;
-  const newIcon = prompt('Chapter icon:', ch.icon);
-  if (newIcon === null) return;
-
-  try {
-    await SYNC.updateChapter(id, { name: newName, icon: newIcon });
-    showToast('Chapter updated!', 'success');
-    await loadAll();
-  } catch (err) {
-    showToast('Error: ' + err.message, 'error');
-  }
+  const name = prompt('Name:', ch.name); if (!name) return;
+  const icon = prompt('Icon:', ch.icon); if (!icon) return;
+  await SYNC.updateChapter(id, { name, icon });
+  toast('Updated!', 'success');
+  chapters = DB.getChapters(); renderStats(); renderChapters(); populateSelect();
 }
 
-// ===== DELETE CHAPTER =====
-async function deleteChapter(id) {
+async function delCh(id) {
   if (!confirm('Delete this chapter and all its songs?')) return;
-  try {
-    await SYNC.removeChapter(id);
-    showToast('Chapter deleted!', 'info');
-    await loadAll();
-  } catch (err) {
-    showToast('Error: ' + err.message, 'error');
-  }
+  await SYNC.removeChapter(id);
+  toast('Deleted!', 'info');
+  chapters = DB.getChapters(); renderStats(); renderChapters(); populateSelect();
 }
 
-// ===== UPLOAD SONG =====
+// ===== SONG UPLOAD =====
 async function uploadSong(e) {
   e.preventDefault();
-  const chapterId = parseInt(document.getElementById('songChapter').value);
+  const chId = parseInt(document.getElementById('songChapter').value);
   const title = document.getElementById('songTitle').value.trim();
   const file = document.getElementById('songFile').files[0];
+  if (!chId || !title || !file) { toast('Fill all fields!', 'error'); return; }
 
-  if (!chapterId || !title || !file) {
-    showToast('Please fill all fields!', 'error');
-    return;
-  }
+  const btn = document.getElementById('upBtn');
+  const bar = document.getElementById('upBar');
+  const fill = document.getElementById('upFill');
+  const status = document.getElementById('upStatus');
 
-  const btn = document.getElementById('uploadBtn');
-  const progress = document.getElementById('uploadProgress');
-  const fill = document.getElementById('uploadFill');
-  const status = document.getElementById('uploadStatus');
-
-  btn.disabled = true;
-  progress.style.display = 'block';
-  fill.style.width = '0%';
-  status.textContent = 'Uploading audio file...';
+  btn.disabled = true; bar.style.display = 'block';
+  fill.style.width = '0%'; status.textContent = 'Uploading...';
 
   try {
-    // Upload to Cloudinary
-    const result = await SYNC.uploadAudio(file, (pct) => {
+    const result = await SYNC.uploadAudio(file, pct => {
       fill.style.width = pct + '%';
       status.textContent = `Uploading... ${pct}%`;
     });
-
-    clearInterval(interval);
-    fill.style.width = '100%';
-    status.textContent = 'Saving song metadata...';
-
-    await SYNC.addSong(chapterId, title, result.url, result.publicId);
-
-    status.textContent = '✅ Upload complete!';
-    showToast('Song uploaded successfully!', 'success');
-
+    fill.style.width = '100%'; status.textContent = 'Saving...';
+    await SYNC.addSong(chId, title, result.url, result.publicId);
+    status.textContent = '✅ Done!';
+    toast('Song uploaded!', 'success');
     document.getElementById('songTitle').value = '';
     document.getElementById('songFile').value = '';
-    document.getElementById('fileLabel').textContent = '📎 Click to select audio file or drag & drop';
-
-    await loadAll();
-
-    setTimeout(() => {
-      progress.style.display = 'none';
-      fill.style.width = '0%';
-    }, 2000);
-  } catch (err) {
-    status.textContent = '❌ Upload failed: ' + err.message;
-    showToast('Upload failed: ' + err.message, 'error');
+    document.getElementById('fileLbl').textContent = '📎 Click to select audio file';
+    chapters = DB.getChapters(); renderStats(); renderChapters(); populateSelect();
+    setTimeout(() => { bar.style.display = 'none'; }, 2000);
+  } catch(err) {
+    status.textContent = '❌ ' + err.message;
+    toast('Upload failed: ' + err.message, 'error');
   }
-
   btn.disabled = false;
-  if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-function updateFileName(input) {
-  const label = document.getElementById('fileLabel');
-  if (input.files.length) {
-    label.textContent = '✅ ' + input.files[0].name;
-  }
-}
-
-// ===== DELETE SONG =====
-async function deleteSong(chapterId, songId) {
+async function delSong(chId, sId) {
   if (!confirm('Delete this song?')) return;
-  try {
-    await SYNC.removeSong(chapterId, songId);
-    showToast('Song deleted!', 'info');
-    await loadAll();
-  } catch (err) {
-    showToast('Error: ' + err.message, 'error');
-  }
-}
-
-function playPreview(url) {
-  const audio = new Audio(url);
-  audio.play().catch(e => showToast('Cannot play audio', 'error'));
+  await SYNC.removeSong(chId, sId);
+  toast('Deleted!', 'info');
+  chapters = DB.getChapters(); renderStats(); renderChapters();
 }
 
 // ===== SETTINGS =====
 function saveToken() {
-  const token = document.getElementById('ghToken').value.trim();
-  if (!token) { showToast('أدخل الـ token!', 'error'); return; }
-  GH.setToken(token);
-  showToast('✅ Token saved! التغييرات هترفع على GitHub', 'success');
-}
-
-async function savePassword() {
-  const email = document.getElementById('adminEmail').value.trim();
-  const password = document.getElementById('adminPassword').value.trim();
-  if (!email && !password) { showToast('أدخل بيانات!', 'error'); return; }
-  if (email) DB._cache.admin.email = email;
-  if (password) DB._cache.admin.password = password;
-  await DB.save();
-  showToast('✅ Password updated!', 'success');
+  const t = document.getElementById('ghToken').value.trim();
+  if (!t) { toast('Enter a token!', 'error'); return; }
+  GH.setToken(t);
+  toast('✅ Token saved!', 'success');
 }
 
 async function resetData() {
-  if (!confirm('⚠️ هتحذف كل البيانات! متأكد؟')) return;
-  if (!confirm('آخر فرصة!')) return;
+  if (!confirm('⚠️ Delete ALL data?')) return;
+  if (!confirm('Last chance!')) return;
   DB._cache = JSON.parse(JSON.stringify(DEFAULT_DATA));
   await DB.save();
-  showToast('✅ Reset done! Reloading...', 'info');
+  toast('Reset done! Reloading...', 'info');
   setTimeout(() => location.reload(), 1500);
 }
 
-// ===== LOGOUT =====
-async function handleLogout() {
-  DB.logout();
-  window.location.href = 'index.html';
-}
-
 // ===== TOAST =====
-function showToast(msg, type = 'info') {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.className = 'toast ' + type;
-  setTimeout(() => toast.classList.add('show'), 10);
-  setTimeout(() => toast.classList.remove('show'), 3000);
+function toast(msg, type='info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast ' + type;
+  setTimeout(() => t.classList.add('show'), 10);
+  setTimeout(() => t.classList.remove('show'), 3000);
 }
 </script>
 </body>
