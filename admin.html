@@ -321,6 +321,7 @@ function renderChapters() {
               <span class="title">${s.title}</span>
               <div class="acts">
                 <button class="btn-s ghost" onclick="new Audio('${s.audio}').play().catch(()=>toast('Cannot play','error'))">▶</button>
+                <button class="btn-s orange" onclick="editSong(${c.id},${s.id})">✏️</button>
                 <button class="btn-s red" onclick="delSong(${c.id},${s.id})">🗑</button>
               </div>
             </div>`).join('')}</div>` : ''}
@@ -435,6 +436,23 @@ function handleImgPreview(input) {
     };
     reader.readAsDataURL(input.files[0]);
   }
+}
+
+async function editSong(chId, sId) {
+  const ch = chapters.find(c => c.id === chId);
+  if (!ch || !ch.songs) return;
+  const song = ch.songs.find(s => s.id === sId);
+  if (!song) return;
+
+  const newTitle = prompt('Song title:', song.title);
+  if (!newTitle) return;
+  const newDur = prompt('Duration (e.g. 3:45):', song.duration || '');
+  song.title = newTitle;
+  if (newDur !== null) song.duration = newDur;
+
+  await DB.save();
+  toast('✅ Song updated!', 'success');
+  chapters = DB.getChapters(); renderStats(); renderChapters();
 }
 
 async function delSong(chId, sId) {
