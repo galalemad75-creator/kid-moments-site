@@ -208,11 +208,11 @@
   <div class="panel" id="p-settings">
     <div class="form-card">
       <h3>🔑 GitHub Token</h3>
-      <div class="form-group"><label>Token</label><input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxx"></div>
-      <button class="btn-s green" style="margin-top:8px" onclick="saveToken()">💾 Save Token</button>
-      <p style="color:var(--text-muted);font-size:0.8rem;margin-top:10px">
-        <a href="https://github.com/settings/tokens/new" target="_blank" style="color:var(--accent)">Create token</a> — صلاحية <strong>repo</strong> مطلوبة
+      <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:12px">
+        ✅ Token is now managed server-side. No need to set it here anymore — data syncs automatically!
       </p>
+      <div class="form-group"><label>Override Token (optional)</label><input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxx"></div>
+      <button class="btn-s ghost" style="margin-top:8px" onclick="saveToken()">💾 Save Override</button>
     </div>
     <div class="form-card">
       <h3>🗑️ Reset All Data</h3>
@@ -290,11 +290,13 @@ async function showDashboard() {
   document.getElementById('dashSection').style.display = 'block';
   document.getElementById('navAction').textContent = '🚪 Logout';
 
+  toast('⏳ Loading & syncing...', 'info');
   try { await DB.init(); } catch(e) { console.warn('DB init:', e); }
   chapters = DB.getChapters();
   renderStats();
   renderChapters();
   populateSelect();
+  toast('✅ Data loaded & synced!', 'success');
 }
 
 function renderStats() {

@@ -2,7 +2,15 @@
 // GITHUB STORAGE — بيانات ثابتة على الريبو
 // ============================================
 
+// ============================================
+// DATA API — Vercel Serverless Proxy
+// Token is stored server-side, never exposed
+// ============================================
+
+const API_URL = '/api/data';
+
 const GH = {
+  // Legacy fields kept for compatibility
   owner: 'galalemad75-creator',
   repo: 'kid-moments-site',
   branch: 'main',
@@ -22,11 +30,10 @@ const GH = {
     };
   },
 
-  // ===== READ data.json from GitHub =====
+  // ===== READ data.json via serverless proxy =====
   async read() {
     try {
-      const url = `https://raw.githubusercontent.com/${this.owner}/${this.repo}/${this.branch}/${this.dataFile}`;
-      const res = await fetch(url + '?t=' + Date.now());
+      const res = await fetch(API_URL + '?t=' + Date.now());
       if (!res.ok) throw new Error('Failed to read data');
       return await res.json();
     } catch (e) {
@@ -35,42 +42,17 @@ const GH = {
     }
   },
 
-  // ===== WRITE data.json to GitHub =====
+  // ===== WRITE data.json via serverless proxy =====
   async write(data) {
-    if (!this.token) throw new Error('No GitHub token set');
-
-    // Get current file SHA (required for update)
-    let sha = null;
-    try {
-      const apiUrl = `https://api.github.com/repos/${this.owner}/${this.repo}/contents/${this.dataFile}`;
-      const check = await fetch(apiUrl, { headers: this._headers() });
-      if (check.ok) {
-        const info = await check.json();
-        sha = info.sha;
-      }
-    } catch (e) {}
-
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
-
-    const body = {
-      message: '🎵 Update chapters & songs data',
-      content,
-      branch: this.branch
-    };
-    if (sha) body.sha = sha;
-
-    const res = await fetch(
-      `https://api.github.com/repos/${this.owner}/${this.repo}/contents/${this.dataFile}`,
-      {
-        method: 'PUT',
-        headers: this._headers(),
-        body: JSON.stringify(body)
-      }
-    );
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data }),
+    });
 
     if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.message || 'Failed to save data');
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to save data');
     }
 
     return true;
@@ -179,6 +161,8 @@ const DB = {
     if (remote && remote.chapters) {
       this._cache = remote;
       localStorage.setItem('km_cache', JSON.stringify(remote));
+      // Auto-sync: if local cache has more songs than GitHub, push local data up
+      await this._autoSync(remote);
       return remote;
     }
     // Fallback to local cache
@@ -190,6 +174,27 @@ const DB = {
     // Use defaults
     this._cache = DEFAULT_DATA;
     return this._cache;
+  },
+
+  // ===== AUTO-SYNC: push local songs to GitHub if GitHub is behind =====
+  async _autoSync(remoteData) {
+    try {
+      const localStr = localStorage.getItem('km_cache');
+      if (!localStr) return;
+      const localData = JSON.parse(localStr);
+      const remoteSongs = remoteData.chapters.reduce((s, c) => s + (c.songs?.length || 0), 0);
+      const localSongs = localData.chapters.reduce((s, c) => s + (c.songs?.length || 0), 0);
+
+      if (localSongs > remoteSongs) {
+        console.log(`🔄 Auto-syncing: local has ${localSongs} songs, GitHub has ${remoteSongs}`);
+        this._cache = localData;
+        localStorage.setItem('km_cache', JSON.stringify(localData));
+        await GH.write(localData);
+        console.log('✅ Auto-sync complete!');
+      }
+    } catch (e) {
+      console.warn('Auto-sync failed:', e.message);
+    }
   },
 
   getData() {
