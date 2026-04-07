@@ -20,8 +20,8 @@ const SYNC = {
     DB.deleteChapter(id);
   },
 
-  async addSong(chapterId, title, audioUrl, publicId) {
-    return DB.addSong(chapterId, title, audioUrl, publicId);
+  async addSong(chapterId, title, audioUrl, publicId, imageUrl) {
+    return DB.addSong(chapterId, title, audioUrl, publicId, imageUrl);
   },
 
   async removeSong(chapterId, songId) {

@@ -178,11 +178,21 @@
           <div class="form-group"><label>Chapter *</label><select id="songChapter" required><option value="">Select...</option></select></div>
           <div class="form-group"><label>Title *</label><input type="text" id="songTitle" required placeholder="Song title"></div>
         </div>
-        <div class="form-group" style="margin-top:12px">
-          <label>Audio File *</label>
-          <div class="file-wrap">
-            <input type="file" id="songFile" accept="audio/*" required onchange="document.getElementById('fileLbl').textContent='✅ '+this.files[0].name">
-            <div class="file-label" id="fileLbl">📎 Click to select audio file</div>
+        <div class="form-row" style="margin-top:12px">
+          <div class="form-group">
+            <label>🎵 Audio File *</label>
+            <div class="file-wrap">
+              <input type="file" id="songFile" accept="audio/*" required onchange="document.getElementById('fileLbl').textContent='✅ '+this.files[0].name">
+              <div class="file-label" id="fileLbl">📎 Click to select audio file</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>🖼️ Cover Image</label>
+            <div class="file-wrap">
+              <input type="file" id="songImage" accept="image/*" onchange="handleImgPreview(this)">
+              <div class="file-label" id="imgLbl">🖼️ Click to select cover image</div>
+            </div>
+            <div id="imgPreview" style="display:none;margin-top:8px"><img id="imgThumb" style="max-width:100px;border-radius:8px"></div>
           </div>
         </div>
         <div class="upload-bar" id="upBar">
@@ -307,7 +317,8 @@ function renderChapters() {
           <div class="count">${(c.songs||[]).length} song${(c.songs||[]).length!==1?'s':''}</div>
           ${c.songs?.length ? `<div class="song-list">${c.songs.map(s=>`
             <div class="song-row">
-              <span class="title">🎵 ${s.title}</span>
+              ${s.image ? `<img src="${s.image}" style="width:40px;height:40px;border-radius:6px;object-fit:cover" onerror="this.style.display='none'">` : '<span style="font-size:1.2rem">🎵</span>'}
+              <span class="title">${s.title}</span>
               <div class="acts">
                 <button class="btn-s ghost" onclick="new Audio('${s.audio}').play().catch(()=>toast('Cannot play','error'))">▶</button>
                 <button class="btn-s red" onclick="delSong(${c.id},${s.id})">🗑</button>
@@ -365,6 +376,7 @@ async function uploadSong(e) {
   const chId = parseInt(document.getElementById('songChapter').value);
   const title = document.getElementById('songTitle').value.trim();
   const file = document.getElementById('songFile').files[0];
+  const imgFile = document.getElementById('songImage').files[0];
   if (!chId || !title || !file) { toast('Fill all fields!', 'error'); return; }
 
   const btn = document.getElementById('upBtn');
@@ -373,20 +385,37 @@ async function uploadSong(e) {
   const status = document.getElementById('upStatus');
 
   btn.disabled = true; bar.style.display = 'block';
-  fill.style.width = '0%'; status.textContent = 'Uploading...';
+  fill.style.width = '0%'; status.textContent = 'Uploading audio...';
 
   try {
+    // Upload audio
     const result = await SYNC.uploadAudio(file, pct => {
       fill.style.width = pct + '%';
-      status.textContent = `Uploading... ${pct}%`;
+      status.textContent = `Uploading audio... ${pct}%`;
     });
+
+    // Upload image if provided
+    let imageUrl = '';
+    if (imgFile) {
+      fill.style.width = '0%';
+      status.textContent = 'Uploading image...';
+      const imgResult = await SYNC.uploadAudio(imgFile, pct => {
+        fill.style.width = pct + '%';
+        status.textContent = `Uploading image... ${pct}%`;
+      });
+      imageUrl = imgResult.url;
+    }
+
     fill.style.width = '100%'; status.textContent = 'Saving...';
-    await SYNC.addSong(chId, title, result.url, result.publicId);
+    await SYNC.addSong(chId, title, result.url, result.publicId, imageUrl);
     status.textContent = '✅ Done!';
     toast('Song uploaded!', 'success');
     document.getElementById('songTitle').value = '';
     document.getElementById('songFile').value = '';
+    document.getElementById('songImage').value = '';
     document.getElementById('fileLbl').textContent = '📎 Click to select audio file';
+    document.getElementById('imgLbl').textContent = '🖼️ Click to select cover image';
+    document.getElementById('imgPreview').style.display = 'none';
     chapters = DB.getChapters(); renderStats(); renderChapters(); populateSelect();
     setTimeout(() => { bar.style.display = 'none'; }, 2000);
   } catch(err) {
@@ -394,6 +423,18 @@ async function uploadSong(e) {
     toast('Upload failed: ' + err.message, 'error');
   }
   btn.disabled = false;
+}
+
+function handleImgPreview(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('imgThumb').src = e.target.result;
+      document.getElementById('imgPreview').style.display = 'block';
+      document.getElementById('imgLbl').textContent = '✅ ' + input.files[0].name;
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
 }
 
 async function delSong(chId, sId) {

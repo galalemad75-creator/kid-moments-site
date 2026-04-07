@@ -230,12 +230,13 @@ const DB = {
   },
 
   // ===== SONGS =====
-  addSong(chapterId, title, audioUrl, publicId) {
+  addSong(chapterId, title, audioUrl, publicId, imageUrl) {
     const ch = this._cache.chapters.find(c => c.id === chapterId);
     if (!ch) return null;
     const song = {
       id: this._cache.nextId.song++,
       title, audio: audioUrl,
+      image: imageUrl || '',
       cloudinary_id: publicId,
       created: new Date().toISOString()
     };
