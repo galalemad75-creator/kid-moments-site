@@ -207,12 +207,28 @@
   <!-- Settings Panel -->
   <div class="panel" id="p-settings">
     <div class="form-card">
+      <h3>☁️ Supabase Connection</h3>
+      <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:12px">Supabase stores your data (no more localStorage quota issues). Files stay on Cloudinary.</p>
+      <div class="form-group"><label>Supabase URL</label><input type="text" id="supaUrl" placeholder="https://xxxxx.supabase.co"></div>
+      <div class="form-group"><label>Supabase Anon Key</label><input type="password" id="supaKey" placeholder="eyJhbGciOiJIUzI1NiIs..."></div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn-s green" onclick="saveSupaCreds()">💾 Save Supabase</button>
+        <button class="btn-s ghost" onclick="testSupa()">🧪 Test Connection</button>
+      </div>
+      <p id="supaStatus" style="font-size:0.8rem;margin-top:8px;min-height:20px"></p>
+    </div>
+    <div class="form-card">
       <h3>🔑 GitHub Token</h3>
       <div class="form-group"><label>Token</label><input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxx"></div>
       <button class="btn-s green" style="margin-top:8px" onclick="saveToken()">💾 Save Token</button>
       <p style="color:var(--text-muted);font-size:0.8rem;margin-top:10px">
         <a href="https://github.com/settings/tokens/new" target="_blank" style="color:var(--accent)">Create token</a> — صلاحية <strong>repo</strong> مطلوبة
       </p>
+    </div>
+    <div class="form-card">
+      <h3>📤 Sync to Supabase</h3>
+      <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:12px">Push all local data to Supabase (run once after first setup).</p>
+      <button class="btn-s orange" onclick="syncToSupa()">🔄 Sync Now</button>
     </div>
     <div class="form-card">
       <h3>🗑️ Reset All Data</h3>
@@ -451,6 +467,54 @@ function saveToken() {
   GH.setToken(t);
   toast('✅ Token saved!', 'success');
 }
+
+function saveSupaCreds() {
+  const url = document.getElementById('supaUrl').value.trim();
+  const key = document.getElementById('supaKey').value.trim();
+  if (!url || !key) { toast('Enter URL and Key!', 'error'); return; }
+  SUPA.setCredentials(url, key);
+  toast('✅ Supabase credentials saved!', 'success');
+  document.getElementById('supaStatus').textContent = '✅ Saved — reload to activate';
+}
+
+async function testSupa() {
+  const el = document.getElementById('supaStatus');
+  if (!SUPA.hasCredentials()) { el.textContent = '❌ Enter credentials first'; return; }
+  el.textContent = '🔄 Testing...';
+  try {
+    const chapters = await SUPA.getChapters();
+    if (chapters !== null) {
+      el.textContent = `✅ Connected! Found ${chapters.length} chapters in Supabase`;
+    } else {
+      el.textContent = '⚠️ Connected but no data found. Click "Sync Now" to push data.';
+    }
+  } catch (e) {
+    el.textContent = '❌ ' + e.message;
+  }
+}
+
+async function syncToSupa() {
+  if (!SUPA.hasCredentials()) { toast('Set Supabase credentials first!', 'error'); return; }
+  toast('🔄 Syncing...', 'info');
+  const ok = await SUPA.upsertChapters(chapters);
+  if (ok) {
+    await SUPA.upsertSetting('nextId', DB._cache.nextId);
+    await SUPA.upsertSetting('admin', DB._cache.admin);
+    toast('✅ Synced to Supabase!', 'success');
+  } else {
+    toast('❌ Sync failed!', 'error');
+  }
+}
+
+// Load saved creds into inputs
+document.addEventListener('DOMContentLoaded', () => {
+  const su = localStorage.getItem('km_supa_url');
+  const sk = localStorage.getItem('km_supa_key');
+  if (su) document.getElementById('supaUrl').value = su;
+  if (sk) document.getElementById('supaKey').value = sk;
+  const gt = localStorage.getItem('km_gh_token');
+  if (gt) document.getElementById('ghToken').value = gt;
+});
 
 async function resetData() {
   if (!confirm('⚠️ Delete ALL data?')) return;
