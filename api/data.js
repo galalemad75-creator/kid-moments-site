@@ -28,12 +28,17 @@ module.exports = async function handler(req, res) {
   const apiUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`;
 
   if (req.method === 'GET') {
-    // READ data.json
+    // READ data.json — use GitHub API to avoid raw.githubusercontent.com CDN cache
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     try {
-      const rawUrl = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${GH_FILE}?t=${Date.now()}`;
-      const resp = await fetch(rawUrl);
-      if (!resp.ok) throw new Error('Failed to read from GitHub');
-      const data = await resp.json();
+      const resp = await fetch(apiUrl + '?ref=' + GH_BRANCH, {
+        headers: headers(),
+        cache: 'no-store',
+      });
+      if (!resp.ok) throw new Error('Failed to read from GitHub API');
+      const info = await resp.json();
+      const content = Buffer.from(info.content, 'base64').toString('utf8');
+      const data = JSON.parse(content);
       return res.status(200).json(data);
     } catch (e) {
       return res.status(500).json({ error: e.message });
@@ -42,19 +47,26 @@ module.exports = async function handler(req, res) {
 
   if (req.method === 'POST') {
     // WRITE data.json
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     try {
       const { data } = req.body;
       if (!data) return res.status(400).json({ error: 'No data provided' });
 
-      // Get current SHA
+      // Get current SHA (with retry for freshness)
       let sha = null;
-      try {
-        const check = await fetch(apiUrl, { headers: headers() });
-        if (check.ok) {
-          const info = await check.json();
-          sha = info.sha;
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          const check = await fetch(apiUrl + '?ref=' + GH_BRANCH, { headers: headers(), cache: 'no-store' });
+          if (check.ok) {
+            const info = await check.json();
+            sha = info.sha;
+            break;
+          }
+        } catch (e) {
+          if (attempt === 1) throw e;
+          await new Promise(r => setTimeout(r, 1000));
         }
-      } catch (e) {}
+      }
 
       const content = Buffer.from(JSON.stringify(data, null, 2), 'utf8').toString('base64');
       const body = {
