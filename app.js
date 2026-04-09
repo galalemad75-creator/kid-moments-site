@@ -344,14 +344,18 @@ function showHome() {
   if (songsView) songsView.style.display = 'none';
 }
 
-// ===== PLAYER =====
+// ════════ PLAYER (Cross-Chapter) ════════
+
 function playSong(i) {
   if (!currentChapter || !currentChapter.songs || !currentChapter.songs[i]) return;
   currentSong = i;
   const s = currentChapter.songs[i];
-  player.src = s.audio;
-  player.play().catch(e => console.warn('Playback blocked:', e));
+  if (!s.audio) return;
 
+  player.src = s.audio;
+  player.play().catch(() => {});
+
+  // Update now-playing bar
   document.getElementById('npTitle').textContent = s.title;
   document.getElementById('npChapter').textContent = currentChapter.name;
 
@@ -363,10 +367,46 @@ function playSong(i) {
   document.getElementById('playBtn').textContent = '⏸';
   document.getElementById('npBar').style.display = 'block';
 
+  // Update chapter title if visible
+  const chTitle = document.getElementById('chapterTitle');
+  if (chTitle) chTitle.textContent = `${currentChapter.icon} ${currentChapter.name}`;
+
+  // Highlight current song
   document.querySelectorAll('.song-card').forEach(c => c.classList.remove('playing'));
-  const sc = document.getElementById('sc-' + i);
-  if (sc) sc.classList.add('playing');
+  document.getElementById('sc-' + i)?.classList.add('playing');
 }
+
+function prevSong() {
+  if (!currentChapter) return;
+  if (currentSong > 0) { playSong(currentSong - 1); return; }
+  // Move to previous chapter
+  const chIdx = chapters.findIndex(c => c.id === currentChapter.id);
+  if (chIdx > 0) {
+    const prevCh = chapters[chIdx - 1];
+    if (prevCh.songs && prevCh.songs.length > 0) {
+      currentChapter = prevCh;
+      playSong(prevCh.songs.length - 1);
+    }
+  }
+}
+
+function nextSong() {
+  if (!currentChapter) return;
+  if (currentSong + 1 < currentChapter.songs.length) { playSong(currentSong + 1); return; }
+  // Move to next chapter
+  const chIdx = chapters.findIndex(c => c.id === currentChapter.id);
+  if (chIdx < chapters.length - 1) {
+    const nextCh = chapters[chIdx + 1];
+    if (nextCh.songs && nextCh.songs.length > 0) {
+      currentChapter = nextCh;
+      playSong(0);
+    }
+  }
+}
+
+// Backward-compatible aliases
+function prevTrack() { prevSong(); }
+function nextTrack() { nextSong(); }
 
 function togglePlay() {
   if (player.paused) {
@@ -384,14 +424,6 @@ function stopAudio() {
   document.getElementById('playBtn').textContent = '▶';
   document.getElementById('npFill').style.width = '0%';
   document.getElementById('npCur').textContent = '0:00';
-}
-
-function prevTrack() {
-  if (currentChapter && currentSong > 0) playSong(currentSong - 1);
-}
-
-function nextTrack() {
-  if (currentChapter && currentSong + 1 < currentChapter.songs.length) playSong(currentSong + 1);
 }
 
 function seekAudio(e) {
@@ -426,10 +458,23 @@ if (player) {
     }
   });
   player.addEventListener('ended', () => {
-    if (currentChapter && currentSong + 1 < currentChapter.songs.length) {
-      playSong(currentSong + 1);
-    } else {
-      document.getElementById('playBtn').textContent = '▶';
+    // Auto-advance: next song in chapter, or next chapter
+    if (currentChapter) {
+      if (currentSong + 1 < currentChapter.songs.length) {
+        playSong(currentSong + 1);
+      } else {
+        // Try next chapter
+        const chIdx = chapters.findIndex(c => c.id === currentChapter.id);
+        for (let ci = chIdx + 1; ci < chapters.length; ci++) {
+          if (chapters[ci].songs && chapters[ci].songs.length > 0) {
+            currentChapter = chapters[ci];
+            playSong(0);
+            return;
+          }
+        }
+        // No more songs anywhere
+        document.getElementById('playBtn').textContent = '▶';
+      }
     }
   });
 }
