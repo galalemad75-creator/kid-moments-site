@@ -3,25 +3,25 @@
     {
       "id": 1,
       "name": "Voice (Speaking Up)",
-      "icon": "🗣️",
+      "icon": "\ud83d\udde3\ufe0f",
       "songs": []
     },
     {
       "id": 2,
       "name": "Saying No to Strangers",
-      "icon": "🚫",
+      "icon": "\ud83d\udeab",
       "songs": []
     },
     {
       "id": 3,
       "name": "Using Indoor Voices",
-      "icon": "🤫",
+      "icon": "\ud83e\udd2b",
       "songs": []
     },
     {
       "id": 4,
       "name": "My Dry Bed",
-      "icon": "🛏️",
+      "icon": "\ud83d\udecf\ufe0f",
       "songs": [
         {
           "id": 1,
@@ -36,223 +36,223 @@
     {
       "id": 5,
       "name": "Thumb Sucking",
-      "icon": "👍",
+      "icon": "\ud83d\udc4d",
       "songs": []
     },
     {
       "id": 6,
       "name": "Managing Whining",
-      "icon": "😤",
+      "icon": "\ud83d\ude24",
       "songs": []
     },
     {
       "id": 7,
       "name": "Sharing with Others",
-      "icon": "🤝",
+      "icon": "\ud83e\udd1d",
       "songs": []
     },
     {
       "id": 8,
       "name": "Listening to Adults",
-      "icon": "👂",
+      "icon": "\ud83d\udc42",
       "songs": []
     },
     {
       "id": 9,
       "name": "Following Rules",
-      "icon": "📋",
+      "icon": "\ud83d\udccb",
       "songs": []
     },
     {
       "id": 10,
       "name": "Handling Anger",
-      "icon": "😠",
+      "icon": "\ud83d\ude20",
       "songs": []
     },
     {
       "id": 11,
       "name": "Asking for Help",
-      "icon": "🙋",
+      "icon": "\ud83d\ude4b",
       "songs": []
     },
     {
       "id": 12,
       "name": "Waiting My Turn",
-      "icon": "⏳",
+      "icon": "\u23f3",
       "songs": []
     },
     {
       "id": 13,
       "name": "Playing Nicely",
-      "icon": "🎮",
+      "icon": "\ud83c\udfae",
       "songs": []
     },
     {
       "id": 14,
       "name": "Saying Please and Thank You",
-      "icon": "🙏",
+      "icon": "\ud83d\ude4f",
       "songs": []
     },
     {
       "id": 15,
       "name": "Using Kind Words",
-      "icon": "💬",
+      "icon": "\ud83d\udcac",
       "songs": []
     },
     {
       "id": 16,
       "name": "Keeping Hands to Myself",
-      "icon": "✋",
+      "icon": "\u270b",
       "songs": []
     },
     {
       "id": 17,
       "name": "Tidying Up",
-      "icon": "🧹",
+      "icon": "\ud83e\uddf9",
       "songs": []
     },
     {
       "id": 18,
       "name": "Brushing My Teeth",
-      "icon": "🦷",
+      "icon": "\ud83e\uddb7",
       "songs": []
     },
     {
       "id": 19,
       "name": "Getting Dressed",
-      "icon": "👕",
+      "icon": "\ud83d\udc55",
       "songs": []
     },
     {
       "id": 20,
       "name": "Eating Healthy",
-      "icon": "🥗",
+      "icon": "\ud83e\udd57",
       "songs": []
     },
     {
       "id": 21,
       "name": "Going to Bed on Time",
-      "icon": "🌙",
+      "icon": "\ud83c\udf19",
       "songs": []
     },
     {
       "id": 22,
       "name": "Washing My Hands",
-      "icon": "🧼",
+      "icon": "\ud83e\uddfc",
       "songs": []
     },
     {
       "id": 23,
       "name": "Sitting Still",
-      "icon": "🧘",
+      "icon": "\ud83e\uddd8",
       "songs": []
     },
     {
       "id": 24,
       "name": "Walking Safely",
-      "icon": "🚶",
+      "icon": "\ud83d\udeb6",
       "songs": []
     },
     {
       "id": 25,
       "name": "Being Honest",
-      "icon": "💎",
+      "icon": "\ud83d\udc8e",
       "songs": []
     },
     {
       "id": 26,
       "name": "Saying Sorry",
-      "icon": "😔",
+      "icon": "\ud83d\ude14",
       "songs": []
     },
     {
       "id": 27,
       "name": "Trying New Foods",
-      "icon": "🍽️",
+      "icon": "\ud83c\udf7d\ufe0f",
       "songs": []
     },
     {
       "id": 28,
       "name": "Managing Frustration",
-      "icon": "💪",
+      "icon": "\ud83d\udcaa",
       "songs": []
     },
     {
       "id": 29,
       "name": "Bedtime Routine",
-      "icon": "🌜",
+      "icon": "\ud83c\udf1c",
       "songs": []
     },
     {
       "id": 30,
       "name": "Morning Routine",
-      "icon": "☀️",
+      "icon": "\u2600\ufe0f",
       "songs": []
     },
     {
       "id": 31,
       "name": "Tying Shoes",
-      "icon": "👟",
+      "icon": "\ud83d\udc5f",
       "songs": []
     },
     {
       "id": 32,
       "name": "Table Manners",
-      "icon": "🍴",
+      "icon": "\ud83c\udf74",
       "songs": []
     },
     {
       "id": 33,
       "name": "Voice (Speaking Up) 2",
-      "icon": "🗣️",
+      "icon": "\ud83d\udde3\ufe0f",
       "songs": []
     },
     {
       "id": 34,
       "name": "Saying No to Strangers 2",
-      "icon": "🚫",
+      "icon": "\ud83d\udeab",
       "songs": []
     },
     {
       "id": 35,
       "name": "Using Indoor Voices 2",
-      "icon": "🤫",
+      "icon": "\ud83e\udd2b",
       "songs": []
     },
     {
       "id": 36,
       "name": "Handling Anger 2",
-      "icon": "😠",
+      "icon": "\ud83d\ude20",
       "songs": []
     },
     {
       "id": 37,
       "name": "Managing Frustration 2",
-      "icon": "💪",
+      "icon": "\ud83d\udcaa",
       "songs": []
     },
     {
       "id": 38,
       "name": "Managing Whining 2",
-      "icon": "😤",
+      "icon": "\ud83d\ude24",
       "songs": []
     },
     {
       "id": 39,
       "name": "Brushing Teeth 2",
-      "icon": "🦷",
+      "icon": "\ud83e\uddb7",
       "songs": []
     },
     {
       "id": 40,
       "name": "Getting Dressed 2",
-      "icon": "👕",
+      "icon": "\ud83d\udc55",
       "songs": []
     },
     {
       "id": 41,
       "name": "Washing Hands 2",
-      "icon": "🧼",
+      "icon": "\ud83e\uddfc",
       "songs": []
     }
   ],
@@ -263,21 +263,21 @@
   "ads": [
     {
       "id": 1,
-      "name": "Ad Box 1 — Header Banner",
+      "name": "Ad Box 1 \u2014 Header Banner",
       "position": "after_hero",
       "code": "",
       "enabled": false
     },
     {
       "id": 2,
-      "name": "Ad Box 2 — Mid Content",
+      "name": "Ad Box 2 \u2014 Mid Content",
       "position": "after_features",
       "code": "",
       "enabled": false
     },
     {
       "id": 3,
-      "name": "Ad Box 3 — Footer Banner",
+      "name": "Ad Box 3 \u2014 Footer Banner",
       "position": "before_footer",
       "code": "",
       "enabled": false
@@ -286,6 +286,5 @@
   "admin": {
     "email": "emadh5156@gmail.com",
     "password": "KidMoments2026"
-  },
-  "_test_marker": "hello123"
+  }
 }
