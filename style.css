@@ -938,3 +938,23 @@ body, .header, .footer, .card, .feature-card, .nav-link, .theme-toggle,
 .btn-outline, .social-links a, .np-btn {
   transition: all 0.35s ease;
 }
+
+/* ===== Ad Slots ===== */
+.ad-slot {
+  padding: 16px 0;
+  overflow: hidden;
+}
+.ad-slot .ad-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ad-slot .ad-container ins,
+.ad-slot .ad-container iframe {
+  max-width: 100%;
+}

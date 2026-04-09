@@ -151,6 +151,7 @@
   <div class="tabs">
     <button class="tab active" data-tab="chapters">📚 Chapters</button>
     <button class="tab" data-tab="upload">🎵 Upload</button>
+    <button class="tab" data-tab="ads">📢 Ads</button>
     <button class="tab" data-tab="settings">⚙️ Settings</button>
   </div>
 
@@ -218,6 +219,35 @@
       <h3>🗑️ Reset All Data</h3>
       <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:12px">Delete everything and go back to defaults.</p>
       <button class="btn-s red" onclick="resetData()">⚠️ Reset</button>
+    </div>
+  </div>
+
+  <!-- Ads Panel -->
+  <div class="panel" id="p-ads">
+    <div class="form-card">
+      <h3>📢 Ad Code Boxes</h3>
+      <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:16px">
+        Paste your ad codes (AdSense, Adsterra, etc.) into the boxes below. Each box maps to a position on the website. Toggle them on/off as needed.
+      </p>
+      <div id="adsList"><p style="text-align:center;color:var(--text-muted);padding:20px">Loading ads...</p></div>
+    </div>
+    <div class="form-card">
+      <h3>➕ Add Custom Ad Box</h3>
+      <form onsubmit="addAdBox(event)">
+        <div class="form-row">
+          <div class="form-group"><label>Box Name *</label><input type="text" id="adName" required placeholder="e.g. Sidebar Ad"></div>
+          <div class="form-group"><label>Position *</label>
+            <select id="adPosition" required>
+              <option value="after_hero">After Hero</option>
+              <option value="after_features">After Features</option>
+              <option value="mid_episodes">Mid Episodes</option>
+              <option value="before_footer">Before Footer</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn-s green" style="margin-top:10px">➕ Add Box</button>
+      </form>
     </div>
   </div>
 </div>
@@ -296,6 +326,7 @@ async function showDashboard() {
   renderStats();
   renderChapters();
   populateSelect();
+  renderAds();
   toast('✅ Data loaded & synced!', 'success');
 }
 
@@ -479,6 +510,103 @@ async function resetData() {
   await DB.save();
   toast('Reset done! Reloading...', 'info');
   setTimeout(() => location.reload(), 1500);
+}
+
+// ===== ADS MANAGEMENT =====
+let ads = [];
+
+function renderAds() {
+  ads = DB.getAds();
+  const el = document.getElementById('adsList');
+  if (!ads.length) {
+    el.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:20px">No ad boxes yet. Add one below! 👇</p>';
+    return;
+  }
+
+  const posLabels = {
+    after_hero: '📍 After Hero Section',
+    after_features: '📍 After Features Section',
+    mid_episodes: '📍 Mid Episodes',
+    before_footer: '📍 Before Footer',
+    custom: '📍 Custom Position'
+  };
+
+  el.innerHTML = ads.map(ad => `
+    <div class="form-card" style="border-left:4px solid ${ad.enabled ? '#27ae60' : '#e74c3c'}; margin-bottom:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <div>
+          <strong style="font-size:1rem">${ad.name}</strong>
+          <span style="font-size:0.8rem;color:var(--text-muted);margin-left:8px">${posLabels[ad.position] || ad.position}</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.85rem;font-weight:700">
+            <input type="checkbox" ${ad.enabled ? 'checked' : ''} onchange="toggleAd(${ad.id}, this.checked)" style="width:18px;height:18px;cursor:pointer">
+            ${ad.enabled ? '🟢 ON' : '🔴 OFF'}
+          </label>
+          <button class="btn-s red" onclick="deleteAdBox(${ad.id})">🗑</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label style="font-size:0.8rem">Ad Code (HTML/JS)</label>
+        <textarea
+          id="adCode-${ad.id}"
+          style="width:100%;min-height:100px;padding:10px;background:var(--bg-primary);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-family:monospace;font-size:0.8rem;resize:vertical"
+          placeholder="Paste your ad code here (e.g. Google AdSense, Adsterra, etc.)"
+        >${ad.code || ''}</textarea>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <div class="form-group" style="flex:1">
+          <label style="font-size:0.8rem">Box Name</label>
+          <input type="text" id="adName-${ad.id}" value="${ad.name}" style="width:100%;padding:8px 12px;background:var(--bg-primary);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-family:inherit;font-size:0.85rem">
+        </div>
+        <div class="form-group" style="flex:1">
+          <label style="font-size:0.8rem">Position</label>
+          <select id="adPos-${ad.id}" style="width:100%;padding:8px 12px;background:var(--bg-primary);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-family:inherit;font-size:0.85rem">
+            <option value="after_hero" ${ad.position==='after_hero'?'selected':''}>After Hero</option>
+            <option value="after_features" ${ad.position==='after_features'?'selected':''}>After Features</option>
+            <option value="mid_episodes" ${ad.position==='mid_episodes'?'selected':''}>Mid Episodes</option>
+            <option value="before_footer" ${ad.position==='before_footer'?'selected':''}>Before Footer</option>
+            <option value="custom" ${ad.position==='custom'?'selected':''}>Custom</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-s green" style="margin-top:10px" onclick="saveAd(${ad.id})">💾 Save Changes</button>
+    </div>
+  `).join('');
+}
+
+async function toggleAd(id, checked) {
+  await SYNC.updateAd(id, { enabled: checked });
+  toast(checked ? '🟢 Ad enabled!' : '🔴 Ad disabled!', 'success');
+  renderAds();
+}
+
+async function saveAd(id) {
+  const code = document.getElementById('adCode-' + id).value;
+  const name = document.getElementById('adName-' + id).value.trim();
+  const position = document.getElementById('adPos-' + id).value;
+  if (!name) { toast('Name is required!', 'error'); return; }
+  await SYNC.updateAd(id, { code, name, position });
+  toast('💾 Ad saved!', 'success');
+  renderAds();
+}
+
+async function addAdBox(e) {
+  e.preventDefault();
+  const name = document.getElementById('adName').value.trim();
+  const position = document.getElementById('adPosition').value;
+  if (!name) { toast('Name is required!', 'error'); return; }
+  await SYNC.addAd(name, position, '');
+  document.getElementById('adName').value = '';
+  toast('📢 Ad box added!', 'success');
+  renderAds();
+}
+
+async function deleteAdBox(id) {
+  if (!confirm('Delete this ad box?')) return;
+  await SYNC.removeAd(id);
+  toast('🗑 Deleted!', 'info');
+  renderAds();
 }
 
 // ===== TOAST =====

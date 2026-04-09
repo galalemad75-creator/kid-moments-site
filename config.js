@@ -146,6 +146,11 @@ const DEFAULT_DATA = {
     { id: 41, name: 'Washing Hands 2', icon: '🧼', songs: [] }
   ],
   nextId: { chapter: 42, song: 1 },
+  ads: [
+    { id: 1, name: 'Ad Box 1 — Header Banner', position: 'after_hero', code: '', enabled: false },
+    { id: 2, name: 'Ad Box 2 — Mid Content', position: 'after_features', code: '', enabled: false },
+    { id: 3, name: 'Ad Box 3 — Footer Banner', position: 'before_footer', code: '', enabled: false }
+  ],
   admin: {
     email: 'emadh5156@gmail.com',
     password: 'KidMoments2026!'
@@ -255,6 +260,32 @@ const DB = {
     const ch = this._cache.chapters.find(c => c.id === chapterId);
     if (ch) {
       ch.songs = (ch.songs || []).filter(s => s.id !== songId);
+      this.save();
+    }
+  },
+
+  // ===== ADS =====
+  getAds() { return this.getData().ads || []; },
+
+  updateAd(id, updates) {
+    const ad = (this._cache.ads || []).find(a => a.id === id);
+    if (ad) { Object.assign(ad, updates); this.save(); }
+    return ad;
+  },
+
+  addAd(name, position, code) {
+    const data = this._cache;
+    if (!data.ads) data.ads = [];
+    const maxId = data.ads.reduce((m, a) => Math.max(m, a.id), 0);
+    const ad = { id: maxId + 1, name, position, code: code || '', enabled: false };
+    data.ads.push(ad);
+    this.save();
+    return ad;
+  },
+
+  deleteAd(id) {
+    if (this._cache.ads) {
+      this._cache.ads = this._cache.ads.filter(a => a.id !== id);
       this.save();
     }
   },

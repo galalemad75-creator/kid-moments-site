@@ -260,6 +260,29 @@
     "chapter": 42,
     "song": 2
   },
+  "ads": [
+    {
+      "id": 1,
+      "name": "Ad Box 1 — Header Banner",
+      "position": "after_hero",
+      "code": "",
+      "enabled": false
+    },
+    {
+      "id": 2,
+      "name": "Ad Box 2 — Mid Content",
+      "position": "after_features",
+      "code": "",
+      "enabled": false
+    },
+    {
+      "id": 3,
+      "name": "Ad Box 3 — Footer Banner",
+      "position": "before_footer",
+      "code": "",
+      "enabled": false
+    }
+  ],
   "admin": {
     "email": "emadh5156@gmail.com",
     "password": "KidMoments2026"

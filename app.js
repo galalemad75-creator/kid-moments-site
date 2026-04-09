@@ -203,6 +203,35 @@ async function initChapters() {
   await DB.init();
   chapters = DB.getChapters();
   renderChapters();
+  renderAds();
+}
+
+// ===== ADS RENDERING =====
+function renderAds() {
+  const ads = DB.getAds();
+  if (!ads || !ads.length) return;
+
+  ads.forEach(ad => {
+    if (!ad.enabled || !ad.code) return;
+    const slot = document.getElementById('ad-' + ad.position);
+    if (!slot) return;
+
+    slot.style.display = 'block';
+    slot.innerHTML = `
+      <div class="ad-container" style="max-width:900px;margin:20px auto;padding:0 20px;text-align:center;">
+        ${ad.code}
+      </div>
+    `;
+
+    // Execute any <script> tags inside the ad code
+    const scripts = slot.querySelectorAll('script');
+    scripts.forEach(oldScript => {
+      const newScript = document.createElement('script');
+      Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+      newScript.textContent = oldScript.textContent;
+      oldScript.parentNode.replaceChild(newScript, oldScript);
+    });
+  });
 }
 
 function renderChapters() {

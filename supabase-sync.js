@@ -30,5 +30,22 @@ const SYNC = {
 
   async uploadAudio(file, onProgress) {
     return await uploadToCloudinary(file, onProgress);
+  },
+
+  // ===== ADS =====
+  getAds() {
+    return DB.getAds();
+  },
+
+  async updateAd(id, data) {
+    return DB.updateAd(id, data);
+  },
+
+  async addAd(name, position, code) {
+    return DB.addAd(name, position, code);
+  },
+
+  async removeAd(id) {
+    DB.deleteAd(id);
   }
 };
